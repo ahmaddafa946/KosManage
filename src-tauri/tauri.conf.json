@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "KosManage",
+  "version": "0.1.0",
+  "identifier": "com.kosmanage.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "KosManage",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 1100,
+        "minHeight": 700,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src 'self' https://*.supabase.co http://127.0.0.1:* ws://127.0.0.1:*; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data: https:;"
+    }
+  }
+}

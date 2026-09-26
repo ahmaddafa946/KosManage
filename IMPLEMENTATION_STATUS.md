@@ -1,0 +1,62 @@
+# IMPLEMENTATION_STATUS — KosManage
+
+Progress ledger for KosManage implementation.
+
+## Overview
+
+- **Project:** KosManage
+- **Stack:** Tauri 2, React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Lucide React, Supabase Auth + PostgreSQL
+- **Target OS:** Windows Desktop (1280x720, 1366x768, 1440x900, 1920x1080)
+
+---
+
+## Status Matrix
+
+| Phase | Description | Status | Notes |
+|---|---|---|---|
+| PHASE 0 | Repository Audit & SSOT Review | COMPLETED | Verified all 11 SSOT docs, database schema, migration SQL, and seed SQL |
+| PHASE 1 | Tauri 2 + React + Vite + TS Bootstrap | COMPLETED | package.json, vite.config, tsconfig, tauri.conf.json, main.rs, App/main entry |
+| PHASE 2 | Tailwind CSS + shadcn/ui + Lucide integration | COMPLETED | Tailwind config, CSS tokens, button/input/label/card/badge/dialog/select/table/skeleton/dropdown primitives |
+| PHASE 3 | Supabase client & env configuration | COMPLETED | Supabase JS client, .env.example with service-role warning, RLS via backend |
+| PHASE 4 | Authentication (Login, Session, Logout, Protected Routes) | COMPLETED | AuthContext session listener, login form Zod, protected routes, logout |
+| PHASE 5 | Application Shell (Sidebar, Topbar, Layout, Navigation) | COMPLETED | Collapsible sidebar, topbar property name + profile menu, 6 routes |
+| PHASE 6 | Dashboard Module | COMPLETED | 7 KPIs + occupancy, recent/upcoming/outstanding sections, skeleton/empty/error |
+| PHASE 7 | Room Management (CRUD, Search, Filters, Detail) | COMPLETED | Search room_number, status filter, create/edit dialog, delete confirm |
+| PHASE 8 | Tenant Management (CRUD, Search, Filters, Detail, History) | COMPLETED | Search name/phone, status filter, available-only picker, deactivate flow |
+| PHASE 9 | Payment Management (CRUD, Filters, Auto-Status) | COMPLETED | Period/status/method filters, status auto DB note, tenant picker |
+| PHASE 10 | Reports Module | COMPLETED | Occupancy rate, period filter this/last/3/6 month, CSS bar + detail table |
+| PHASE 11 | Settings Module | COMPLETED | Owner email, property name/address edit, logout |
+| PHASE 12 | Validation & Build | COMPLETED | typecheck pass, vitest 13/13 pass, vite build pass; Tauri build blocked (no cargo) |
+
+---
+
+## Validation Results
+
+- `npm run typecheck` — pass
+- `npm test` — 3 files, 13 tests pass (payment status mirror, Zod schemas, format utils)
+- `npm run build` — pass (vite, 1763 modules; chunk-size warning only)
+- Secrets check — `.env` ignored, only `.env.example` tracked with placeholders; no service-role key in client
+- Tauri build — not run, `cargo` missing on host
+- Migration fix — `is_property_owner(uuid)` moved after `properties` table; dependency order reviewed, no schema change
+- Migration apply — user ran `20260326000000_init_kosmanage.sql` in SQL Editor: Success, no rows returned
+
+## Live Verification (Supabase, anon key only)
+
+- Supabase URL reachable: PASS
+- Auth endpoint reachable (health 200, invalid login 400): PASS
+- Tables available via REST: profiles PASS, properties PASS, rooms PASS, tenants PASS, payments PASS
+- RLS anon behavior (empty `[]`, http 200, no leak): PASS
+- Typecheck: PASS
+- Tests: 13/13 PASS
+
+## Current Sprint Focus
+
+- Live CRUD smoke test in app (`npm run dev`): login, rooms, tenants, payments, dashboard
+- RLS/integration checklist in TESTING.md against live project (seed owner flow, double-book reject, cross-owner isolation)
+- Optional next: install Rust toolchain to verify `tauri build` on Windows
+
+---
+
+## Blockers
+
+- No Rust/cargo on host — Tauri binary build unverifiable until toolchain installed

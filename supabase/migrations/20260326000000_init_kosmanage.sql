@@ -55,24 +55,6 @@ begin
 end;
 $$;
 
-create or replace function public.is_property_owner(p_property_id uuid)
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-  select exists (
-    select 1
-    from public.properties p
-    where p.id = p_property_id
-      and p.owner_id = auth.uid()
-  );
-$$;
-
-revoke all on function public.is_property_owner(uuid) from public;
-grant execute on function public.is_property_owner(uuid) to authenticated;
-
 -- ---------------------------------------------------------------------------
 -- profiles
 -- ---------------------------------------------------------------------------
@@ -127,6 +109,26 @@ create index idx_properties_owner_id on public.properties (owner_id);
 create trigger properties_set_updated_at
 before update on public.properties
 for each row execute function public.set_updated_at();
+
+-- Ownership helper: defined AFTER public.properties exists so the
+-- SQL body resolves (previously created before the table -> ERROR 42P01).
+create or replace function public.is_property_owner(p_property_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.properties p
+    where p.id = p_property_id
+      and p.owner_id = auth.uid()
+  );
+$$;
+
+revoke all on function public.is_property_owner(uuid) from public;
+grant execute on function public.is_property_owner(uuid) to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- rooms
