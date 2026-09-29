@@ -93,7 +93,7 @@ Progress ledger for KosManage implementation.
 
 ## Slice 3 COMPLETE — facilities + room assignments (T3.1/T3.2, live verified)
 - Tables: facilities, room_facilities; unique (property_id, lower(btrim(name))); backfill INSERT-only; corrective for '+' delimiter.
-- RLS: 4 owner + 1 tenant-read per table; cross-property guard r.property_id = f.property_id on INSERT/UPDATE.
+- RLS: 3 owner + 1 tenant-read per table; cross-property guard r.property_id = f.property_id on INSERT/UPDATE.
 - UI: checkbox + inline add auto-selected; legacy column read-only fallback.
 - Live: 5 facilities, 5 links, legacy utuh, 0 dup, 0 artifact, RLS PASS.
 - Tests 43/43 PASS. Typecheck PASS. Build PASS. Slice 4+ not started.
@@ -103,3 +103,8 @@ Progress ledger for KosManage implementation.
 - Bucket: normal/attention/soon/very_soon/expired/past_due/open_ended; null end_date -> null.
 - Invalid YYYY-MM-DD fail safe -> null. Computed only, never persisted.
 - Tests 62/62 PASS (19 rental). Typecheck PASS. Build PASS. No migration/DB change.
+
+## Slice 5 — maintenance reports lifecycle (T5.1 implementation COMPLETE, live apply pending)
+- Table + 5 indexes + updated_at reuse + 2 INVOKER triggers (revoked) + 7 policies (3 owner, 3 tenant).
+- Lifecycle forward-only; resolved_at DB-authoritative; tenant lane cannot change status.
+- Tests 75/75 PASS. Typecheck PASS. Build PASS. Live migration NOT applied — verification after manual apply.

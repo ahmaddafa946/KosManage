@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 5 COMPLETE — maintenance reports lifecycle (migration pending manual apply)
+- maintenance_reports table + forward-only lifecycle trigger + integrity trigger + 7 RLS policies.
+- Zod create/tenant-update/owner-update schemas; service without storage (Slice 6).
+- Tests 75/75 local (26 maintenance), typecheck, build PASS. Live apply NOT done — user applies via SQL Editor.
+
 ### Slice 4 COMPLETE — rental countdown utility (computed, no DB change)
 - src/lib/rental.ts: Jakarta calendar-date daysRemaining, 7 buckets incl. open_ended, id labels.
 - Tests 62/62 (19 rental incl. midnight-boundary + leap + invalid), typecheck, build PASS.

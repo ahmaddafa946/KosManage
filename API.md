@@ -152,3 +152,7 @@ Technical details → developer console/logs only.
 
 ## Rental utility (Slice 4, client-local)
 - getJakartaDateKey/calculateDaysRemaining/getRentalBucket/getRentalStatus/formatDaysRemaining in src/lib/rental.ts. Pure, no network.
+
+## Maintenance (Slice 5, no storage yet)
+- getMaintenanceReports(propertyId, filters) owner; getMyMaintenanceReports tenant; createMaintenanceReport(ctx, input); updateMaintenanceReport (owner); updateMyMaintenanceReport (tenant content-only). No delete: FR-110..112 never grant it.
+- Lifecycle: forward-only via isAllowedTransition; resolved_at DB-authoritative, never client-set.

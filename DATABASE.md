@@ -267,3 +267,9 @@ Avoid unbounded selects without filters as data grows.
 
 ## daysRemaining (computed, NOT stored)
 - Derived in src/lib/rental.ts from tenants.end_date vs Jakarta calendar date. No column, no trigger.
+
+## maintenance_reports (Slice 5, FR-110..112)
+- id PK; property_id FK CASCADE; room_id FK SET NULL; tenant_id FK RESTRICT; title/description bounded; category/priority/status CHECKs; image_url NULL (planned, Slice 6 fills via Storage); timestamps + resolved_at NULL.
+- Lifecycle source of truth: forward-only submitted->in_progress->resolved->closed (trigger guard_maintenance_transition). resolved_at set on resolve, retained on closed, else NULL.
+- Integrity trigger: tenant.property match, room match + tenant current room, active-tenant INSERT.
+- Indexes: property_id, tenant_id, status, (property_id, status), room_id.

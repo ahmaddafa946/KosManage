@@ -136,3 +136,8 @@ SEC-001 … SEC-008 in `REQUIREMENTS.md`. Schema details in `DATABASE.md`. Agent
 - maintenance_reports UPDATE USING+WITH CHECK; tenant block set resolved/closed (policy + trigger check).
 - Storage: bucket maintenance-reports PRIVATE; Storage RLS tenant-own vs owner-property; path первым segmen property_id; signed URL display; validasi MIME/size/ownership di client+policy; tanpa service_role di client; tanpa secret hardcoded.
 - PII: identity_number/payment fields hanya via RLS owner/own.
+
+## Maintenance reports (Slice 5, FR-112)
+- Owner lane: 4 policies via private.is_property_owner(property_id); UPDATE USING + WITH CHECK.
+- Tenant lane: select/insert/update own active tenant chain (tenants.profile_id = auth.uid()); tenant cannot set resolved/closed (RLS scope + trigger non-owner backstop).
+- Triggers INVOKER + search_path='' + revoke all incl. service_role. No Storage in Slice 5.

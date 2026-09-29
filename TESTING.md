@@ -97,3 +97,6 @@ Run after migration + seed:
 
 ## Rental countdown (Slice 4)
 - 19 tests: boundaries 0/1/6/7/14/15/30/31, past-due, null open-ended, Jakarta midnight, leap, invalid; deterministic via injected now.
+
+## Maintenance (Slice 5)
+- 26 tests: 4 lifecycle matrix + 13 Zod (incl. forbidden-field strip) + 1 service contract (no storage fns) + 8 existing-adjacent. Live checklist in migration section 5 (table/constraints/indexes/policies/functions/grants/counts).

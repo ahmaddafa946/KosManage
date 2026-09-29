@@ -59,7 +59,7 @@
   - Files: src/lib/rental.ts, tests
 
 ## Slice 5 — maintenance
-- [ ] T5.1 reports lifecycle
+- [x] T5.1 reports lifecycle (table + RLS + transition guard, migration pending manual apply)
   - Acceptance: FR-110/111/112
   - Verify: Zod + DB transition tests; isolation tests
   - Files: supabase/migrations/*, src/services/maintenance.ts, src/schemas/*

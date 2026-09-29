@@ -104,3 +104,23 @@ export interface RoomFacility {
   facility_id: string;
   created_at: string;
 }
+
+export type MaintenanceCategory = 'AC' | 'electrical' | 'plumbing' | 'furniture' | 'internet' | 'other';
+export type MaintenancePriority = 'low' | 'medium' | 'high';
+export type MaintenanceStatus = 'submitted' | 'in_progress' | 'resolved' | 'closed';
+
+export interface MaintenanceReport {
+  id: string;
+  property_id: string;
+  room_id: string | null;
+  tenant_id: string;
+  title: string;
+  description: string;
+  category: MaintenanceCategory;
+  priority: MaintenancePriority;
+  status: MaintenanceStatus;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+  resolved_at: string | null;
+}
