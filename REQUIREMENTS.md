@@ -433,3 +433,133 @@ Priority legend: **Must** | **Should** | **Could** | **Won't** (MVP)
 | Property | FR-060–061 |
 | Settings | FR-070–071 |
 | Quality/Security | NFR-*, SEC-* |
+
+---
+
+# v2.0 — Owner & Tenant Expansion (approved delta, D1–D9 binding)
+
+## FR-080 Identity & Roles
+
+#### FR-080
+**Requirement:** Profile mendukung role owner/tenant.
+**Priority:** Must
+**Acceptance:** profiles.role in ('owner','tenant'); default owner untuk existing; tenant login via Supabase Auth sama.
+
+#### FR-081
+**Requirement:** Tenant terhubung ke profile via tenants.profile_id → profiles.id.
+**Priority:** Must
+**Acceptance:** hanya SATU active tenant record per profile (partial unique); historical inactive boleh banyak; tenant tanpa profile = legacy/unlinked.
+
+#### FR-082
+**Requirement:** Route protection berbasis role.
+**Priority:** Must
+**Acceptance:** tenant tidak bisa buka owner routes via URL langsung (redirect/deny); owner routes tetap RLS-enforced.
+
+## FR-090 Facilities
+
+#### FR-090
+**Requirement:** Master facilities per property.
+**Priority:** Must
+**Acceptance:** facilities(id, property_id, name, is_active); name unique per property; inactive disembunyikan default.
+
+#### FR-091
+**Requirement:** Relasi room M2M via room_facilities(room_id, facility_id).
+**Priority:** Must
+**Acceptance:** PK (room_id, facility_id); cascade on room delete; fasilitas inactive tidak terhapus destruktif.
+
+#### FR-092
+**Requirement:** Room create/edit pakai CHECKBOX + [+ Tambahkan Fasilitas] inline.
+**Priority:** Must
+**Acceptance:** fasilitas baru tersimpan ke master, langsung muncul + auto-selected; bukan radio.
+
+#### FR-093
+**Requirement:** Legacy rooms.facilities dipertahankan read-only.
+**Priority:** Must
+**Acceptance:** migrasi parse → master; stop write baru; kolom ditandai deprecated di DATABASE.md.
+
+## FR-100 Rental Period
+
+#### FR-100
+**Requirement:** start_date/end_date terlihat owner & tenant; days_remaining computed.
+**Priority:** Must
+**Acceptance:** tidak ada kolom days_remaining di DB; util shared Asia/Jakarta; bucket >30 normal, 15–30 attention, 7–14 soon, 1–6 very soon, 0 expired, <0 past due.
+
+## FR-110 Maintenance Reports
+
+#### FR-110
+**Requirement:** Tenant buat laporan + upload foto; owner lihat/proses milik propertinya.
+**Priority:** Must
+**Acceptance:** category AC/electrical/plumbing/furniture/internet/other; priority low/medium/high; status submitted/in_progress/resolved/closed.
+
+#### FR-111
+**Requirement:** Lifecycle status terkontrol.
+**Priority:** Must
+**Acceptance:** tenant tidak bisa set resolved/closed; resolved_at hanya diisi saat transisi resolve; transisi invalid ditolak (Zod + DB check/trigger).
+
+#### FR-112
+**Requirement:** Isolasi laporan.
+**Priority:** Must
+**Acceptance:** tenant hanya report sendiri; owner hanya report propertinya.
+
+## FR-120 Payment Expansion
+
+#### FR-120
+**Requirement:** Tambah metode qris + field additive payment_reference/payment_url/paid_at.
+**Priority:** Must
+**Acceptance:** status/payment_method/payment_date tetap canonical; tidak rename; trigger status existing dipertahankan.
+
+#### FR-121
+**Requirement:** Tenant: lihat tagihan, pilih metode, mulai payment flow (simulasi jelas), lihat history.
+**Priority:** Must
+**Acceptance:** simulasi berlabel SIMULASI, bukan klaim gateway nyata; owner lihat status/arrears/history.
+
+#### FR-122
+**Requirement:** Gateway produksi di luar scope.
+**Priority:** Won't (v2.0)
+**Acceptance:** dicatat sebagai future decision.
+
+## FR-130 Tenant Profile & Dashboards
+
+#### FR-130
+**Requirement:** Tenant kelola profil sendiri (full_name, phone, email bila flow允许, info model existing).
+**Priority:** Must
+**Acceptance:** tidak bisa ubah role/owner_id/property ownership/tenant_id/payment ownership.
+
+#### FR-131
+**Requirement:** Owner dashboard expanded: existing KPI + new maintenance reports, in-progress, upcoming expiry, payments due.
+**Priority:** Must
+**Acceptance:** data nyata, tanpa trend palsu.
+
+#### FR-132
+**Requirement:** Tenant dashboard: kamar, harga/bulan, masa sewa countdown, berakhir, tagihan, status, [Bayar Sekarang], Laporan Saya.
+**Priority:** Must
+**Acceptance:** empty state informatif bila tanpa data.
+
+## FR-140 Reports Split
+
+#### FR-140
+**Requirement:** Owner "Laporan" = operational/maintenance; "Laporan Keuangan" = financial.
+**Priority:** Must
+**Acceptance:** Tenant "Laporan Saya" = maintenance miliknya; "Riwayat" = payment/rental history miliknya.
+
+## Security delta (v2.0)
+
+- SEC-009 tenant isolation via tenants.profile_id = auth.uid() chain; SEC-010 private Storage bucket maintenance-reports + Storage RLS; SEC-011 signed URL display; SEC-012 upload validasi MIME/size/ownership; UPDATE policies USING + WITH CHECK untuk maintenance_reports; helper pindah ke private.is_property_owner() hardened (SECURITY DEFINER minimal, SET search_path = '', revoke PUBLIC).
+- profiles.email = denormalized display copy; auth.users.email source of truth auth; tidak untuk authorization; user_metadata tidak untuk authorization.
+
+## NFR delta (v2.0)
+
+- NFR-010 timezone aplikasi Asia/Jakarta untuk days_remaining; NFR-011 photo 2-step flow (create → upload {property}/{tenant}/{report}/{file} → update image_url); NFR-012 test deterministik tanggal >30/30/15/7/1/0/negatif.
+
+## Traceability v2.0
+
+| Area | IDs |
+|---|---|
+| Identity/role | FR-080–082 |
+| Facilities | FR-090–093 |
+| Rental | FR-100 |
+| Maintenance | FR-110–112 |
+| Payments | FR-120–122 |
+| Tenant profile/dash | FR-130–132 |
+| Reports | FR-140 |
+| Security | SEC-009–012 |

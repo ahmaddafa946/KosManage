@@ -119,3 +119,11 @@ npm run tauri build
 4. Implement features: Dashboard → Rooms → Tenants → Payments → Reports
 5. Add Vitest + RTL; cargo tests as needed
 6. Windows production build verification
+
+---
+
+# v2.0 Dev Notes
+
+- Toolchain: npm; typecheck `node ./node_modules/typescript/lib/tsc.js --noEmit` bila wrapper .bin rusak (CRLF/Windows symlink); vitest run; vite build. Tauri build butuh cargo (masih blocker host).
+- Flow slice: implement → test → typecheck → build bila relevan → verify → update IMPLEMENTATION_STATUS → commit atomic lokal (no push tanpa instruksi).
+- SSOT dulu sebelum code (fase ini); migration additive berurutan; backfill non-destruktif.

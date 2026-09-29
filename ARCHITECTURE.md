@@ -176,3 +176,20 @@ auth.uid()
 - Operations catalog: `API.md`
 - Security: `SECURITY.md`
 - Product scope: `PRD.md` / `REQUIREMENTS.md`
+
+---
+
+# v2.0 Delta (approved D1–D9)
+
+## Role model
+- profiles.role: 'owner' | 'tenant' (default 'owner' untuk existing). profiles.email = display copy; auth = auth.users.email.
+- tenants.profile_id → profiles.id nullable (legacy null); partial unique satu active per profile.
+- Routing: dua shell (OwnerShell routes existing + /financial-reports; TenantShell: /tenant, /tenant/room, /tenant/payments, /tenant/reports, /tenant/history, /tenant/profile). Role guard di React + RLS di DB (menu hiding bukan auth).
+
+## Data plane additions
+- facilities, room_facilities (M2M), maintenance_reports, payments additive cols (qris, payment_reference, payment_url, paid_at — final di migration).
+- Storage: private bucket maintenance-reports; path {property_id}/{tenant_id}/{report_id}/{filename}; signed URL display.
+- Helpers: private.is_property_owner(uuid) hardened; tenant helper is_own_tenant() bila perlu (final di migration); SET search_path = ''.
+
+## Layer rules (unchanged)
+- React → Supabase; Rust minimal; Zod client + constraint/trigger DB authoritative; service per modul ikuti convention existing (services/*.ts).

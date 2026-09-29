@@ -223,3 +223,44 @@ Prefer aggregate queries scoped by `property_id`:
 - Outstanding: `status IN ('unpaid','partial','overdue')`
 
 Avoid unbounded selects without filters as data grows.
+
+---
+
+# v2.0 Planned Schema Delta (NOT YET APPLIED — no migration file in this stage)
+
+## profiles
+- ADD role text NOT NULL DEFAULT 'owner' CHECK (role IN ('owner','tenant'))
+- ADD email text NULL (display copy, D1); ADD phone text NULL
+- Sync aman dari auth.users via trigger/app (final di migration); profiles.email bukan auth source.
+
+## tenants
+- ADD profile_id uuid NULL REFERENCES profiles(id) ON DELETE SET NULL
+- Partial unique: UNIQUE (profile_id) WHERE status='active' AND profile_id IS NOT NULL
+- Index idx_tenants_profile_id.
+
+## facilities (new)
+- id uuid PK; property_id FK→properties CASCADE; name text NOT NULL; is_active bool DEFAULT true; timestamps
+- UNIQUE (property_id, lower(name)) — final expression di migration; idx_facilities_property.
+
+## room_facilities (new M2M)
+- room_id FK→rooms CASCADE; facility_id FK→facilities RESTRICT/CASCADE (final: CASCADE on room, RESTRICT on facility bila dipakai); PK (room_id, facility_id).
+
+## rooms.facilities legacy
+- PRESERVE; tandai DEPRECATED read-only; migrasi parse comma → master per property; stop write baru (UI checkbox only).
+
+## maintenance_reports (new)
+- id PK; property_id FK CASCADE; room_id FK SET NULL; tenant_id FK RESTRICT; title; description; category CHECK (AC/electrical/plumbing/furniture/internet/other); priority (low/medium/high); status (submitted/in_progress/resolved/closed) DEFAULT submitted; image_url NULL; created_at/updated_at; resolved_at NULL.
+- CHECK transisi dasar + trigger resolved_at (final di migration).
+- Indexes: property_id, tenant_id, status, (property_id, status).
+
+## payments additive
+- KEEP status/payment_method/payment_date canonical (D3).
+- ADD payment_method value 'qris' ke CHECK; ADD payment_reference text NULL; ADD payment_url text NULL; ADD paid_at timestamptz NULL.
+- Trigger status existing dipertahankan.
+
+## RLS plan
+- helper pindah private.is_property_owner hardened (D5); policies rooms/tenants/payments/facilities/room_facilities via ownership; maintenance_reports: tenant own (tenant.profile_id=auth.uid()), owner via property; UPDATE USING+WITH CHECK semua.
+- Storage policies bucket maintenance-reports private (final di migration).
+
+## Migration strategy
+- Satu/lebih migration additive berurutan: 1) profiles+tenants link 2) facilities+M2M+legacy backfill 3) maintenance_reports 4) payments additive 5) helper private + RLS + storage. Backfill non-destruktif; rollback = drop new objects only.

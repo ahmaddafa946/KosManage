@@ -125,3 +125,27 @@ Technical details → developer console/logs only.
 - Custom HTTP resource server
 - GraphQL
 - Exposing service-role endpoints from the desktop app
+
+---
+
+# v2.0 Operations Delta
+
+## IDENTITY
+- getMyProfile / updateMyProfile (guarded: name/phone/email bila allowed; block role/ids)
+- getMyTenant (by profile_id), owner getTenants tetap.
+
+## FACILITIES
+- getFacilities(propertyId, includeInactive=false) / createFacility / setFacilityActive / getRoomFacilities / setRoomFacilities(roomId, facilityIds[]) — owner only.
+
+## RENTAL
+- getMyRental (tenant: room, start/end, daysRemaining computed client Asia/Jakarta) / owner getRentalPeriods (upcoming expiry list).
+
+## MAINTENANCE
+- tenant createReport(title/desc/category/priority) → uploadReportPhoto(reportId, file) → updateReportImage; getMyReports; owner getReports(propertyId, filters) / updateReportStatus (guarded transitions) / resolveReport / closeReport.
+
+## PAYMENTS v2
+- tenant getMyBills / getMyHistory / startSimulatedPayment (labeled SIMULASI); owner getPayments/getArrears tetap + qris filter.
+- Error ID tambahan: Fasilitas sudah ada. / Transisi status laporan tidak valid. / Pembayaran simulasi — bukan transaksi gateway nyata. / File terlalu besar / tipe tidak didukung.
+
+## STORAGE
+- getReportSignedUrl(reportId) — signed URL private; upload path {property_id}/{tenant_id}/{report_id}/{filename}.

@@ -3,9 +3,14 @@ export type TenantStatus = 'active' | 'inactive';
 export type PaymentMethod = 'cash' | 'transfer' | 'ewallet';
 export type PaymentStatus = 'unpaid' | 'partial' | 'paid' | 'overdue';
 
+export type UserRole = 'owner' | 'tenant';
+
 export interface Profile {
   id: string;
   full_name: string | null;
+  role: UserRole;
+  email: string | null;
+  phone: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -47,6 +52,7 @@ export interface Tenant {
   rent_price: number;
   deposit: number | null;
   status: TenantStatus;
+  profile_id: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;

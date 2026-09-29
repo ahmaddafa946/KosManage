@@ -1,10 +1,14 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import type { Profile, UserRole } from '@/types/database';
+import { resolveRole } from '@/lib/roles';
 
 interface AuthState {
   user: User | null;
   session: Session | null;
+  profile: Profile | null;
+  role: UserRole;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -15,18 +19,32 @@ const AuthContext = createContext<AuthState | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    async function loadProfile(uid: string | undefined) {
+      if (!uid) {
+        setProfile(null);
+        return;
+      }
+      const { data } = await supabase.from('profiles').select('*').eq('id', uid).maybeSingle();
+      setProfile((data as Profile | null) ?? null);
+    }
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
-      setLoading(false);
+      void loadProfile(data.session?.user?.id).finally(() => setLoading(false));
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s);
       setUser(s?.user ?? null);
-      setLoading(false);
+      if (!s?.user) {
+        setProfile(null);
+        setLoading(false);
+      } else {
+        void loadProfile(s.user.id).finally(() => setLoading(false));
+      }
     });
     return () => sub.subscription.unsubscribe();
   }, []);
@@ -41,9 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
     setSession(null);
     setUser(null);
+    setProfile(null);
   }
 
-  return <AuthContext.Provider value={{ user, session, loading, signIn, signOut }}>{children}</AuthContext.Provider>;
+  const role = resolveRole(profile);
+  return <AuthContext.Provider value={{ user, session, profile, role, loading, signIn, signOut }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthState {

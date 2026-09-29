@@ -82,3 +82,15 @@ Run after migration + seed:
 - Visual regression suite
 - Full a11y audit automation (manual checks still required)
 - Load testing beyond 50 rooms
+
+---
+
+# v2.0 Test Matrix (TDD, per slice)
+
+- ROLE: owner nav vs tenant nav; unauthorized role route rejected; cross-role URL deny.
+- FACILITIES: create; duplicate per property rejected; inline add auto-selected; inactive hidden default; existing assoc preserved; M2M relation.
+- RENTAL: days_remaining buckets >30/30/15/7/1/0/negatif; Asia/Jakarta deterministik; null end_date handling (final: open-ended label).
+- MAINTENANCE: valid create; invalid Zod rejected; tenant own-only; owner property-only; invalid transition rejected; resolved_at behavior; photo MIME/size/ownership validation.
+- PAYMENTS: qris accepted; reference/url/paid_at additive; status trigger tetap; ownership + tenant isolation + owner property isolation; simulasi label.
+- SECURITY/RLS: owner A vs B; tenant A vs B; tenant block owner fields; tenant block report ownership change; storage tenant-own vs owner-property.
+- Util tests: daysRemaining, rentalBucket, facility normalize, payment simulation label. Integration: backfill legacy non-destruktif. E2E: owner login, tenant login, facilities checkbox, countdown, report+photo, status flow, payment sim, dashboards, profile, logout.

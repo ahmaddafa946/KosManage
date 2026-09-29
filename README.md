@@ -121,3 +121,9 @@ Ownership-based RLS, occupancy triggers, and payment status computation are defi
 ## License
 
 To be determined by the repository owner.
+
+---
+
+# v2.0 Scope (planned, not yet implemented)
+
+Owner & Tenant expansion: role-based auth, master facilities + checkbox, rental countdown Asia/Jakarta, maintenance reports + private photo Storage, payment additive (qris/reference/url/paid_at, simulasi berlabel), tenant dashboards/profile, Laporan vs Laporan Keuangan split. Baseline produk v1.0; final expansion = v2.0. Tanpa Liquid Glass redesign di tahap ini.

@@ -125,3 +125,14 @@ Files:
 ## Related requirements
 
 SEC-001 … SEC-008 in `REQUIREMENTS.md`. Schema details in `DATABASE.md`. Agent rules in `AGENTS.md`.
+
+---
+
+# v2.0 Security Delta (D1/D5/D6 binding)
+
+- profiles.email display copy only; auth source = auth.users.email; tidak untuk authorization; user_metadata tidak untuk authorization.
+- Helper: private.is_property_owner hardened — SECURITY DEFINER minimal, SET search_path='', qualify semua relasi, revoke PUBLIC, grant authenticated, verify auth.uid() not null, tidak expose via Data API; pakai (select private.is_property_owner(...)) di policies.
+- Tenant isolation: tenants.profile_id = auth.uid() chain untuk tenants/payments/maintenance_reports own; owner isolation via property.
+- maintenance_reports UPDATE USING+WITH CHECK; tenant block set resolved/closed (policy + trigger check).
+- Storage: bucket maintenance-reports PRIVATE; Storage RLS tenant-own vs owner-property; path первым segmen property_id; signed URL display; validasi MIME/size/ownership di client+policy; tanpa service_role di client; tanpa secret hardcoded.
+- PII: identity_number/payment fields hanya via RLS owner/own.

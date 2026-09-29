@@ -246,3 +246,41 @@ WhatsApp, QRIS/gateway, reminder otomatis, email, booking, kontrak digital, util
 - `DATABASE.md` — schema
 - `UI-UX.md` — desain antarmuka
 - `SECURITY.md` — keamanan
+
+---
+
+# v2.0 — OWNER & TENANT EXPANSION (approved spec delta)
+
+> No Liquid Glass redesign in v2.0. Product capability focus only.
+> Audit decisions D1–D9 are binding. Product baseline: v1.0.
+
+## v2.0 Capability Map
+
+| Module ID | Responsibility | Depends on |
+|---|---|---|
+| identity-role | profiles.role (owner/tenant), tenants.profile_id link | — |
+| owner-dashboard | owner KPI expansion (maintenance, expiry, arrears) | identity-role |
+| tenant-dashboard | tenant home (room, rental, bills, reports) | identity-role |
+| facilities | master facilities + room_facilities M2M, checkbox UI | identity-role |
+| rental-period | days_remaining computed, Asia/Jakarta | identity-role |
+| maintenance-reports | reports lifecycle + categories/priorities | identity-role |
+| payment-expansion | qris + reference/url/paid_at additive, simulated flow | identity-role |
+| tenant-profile | tenant self-profile edit (guarded) | identity-role |
+| reports | operational (Laporan) vs financial (Laporan Keuangan) split | above modules |
+| security-rls | cross-cutting RLS + Storage policies | all |
+
+Build order: identity-role → owner-dashboard, tenant-dashboard → facilities, rental-period, maintenance-reports, payment-expansion, tenant-profile → reports. security-rls cross-cutting.
+
+## v2.0 Roles
+
+- Owner: dashboard, property, rooms, master facilities, tenants, rental periods, payments, arrears, maintenance view/process, financial reports, settings. Owner sees only owned properties.
+- Tenant: dashboard, own room + facilities, rental dates + days remaining, bills, simulated payment flow, history, own maintenance reports + photo upload, own profile. Tenant cannot see other tenants/rooms/properties.
+
+## v2.0 Scope Additions
+
+- Master facilities per property + room_facilities M2M; room create/edit uses CHECKBOX + [+ Tambahkan Fasilitas] inline; inactive hidden by default; legacy rooms.facilities preserved read-only (see DATABASE.md).
+- Rental period: start_date/end_date visible to both roles; days_remaining computed, never stored; buckets >30 normal, 15–30 attention, 7–14 soon, 1–6 very soon, 0 expired, <0 past due; timezone Asia/Jakarta.
+- Maintenance reports: category AC/electrical/plumbing/furniture/internet/other; priority low/medium/high; status submitted→in_progress→resolved→closed; tenant cannot set resolved/closed; resolved_at on resolve transition only.
+- Photo: private bucket maintenance-reports, path {property_id}/{tenant_id}/{report_id}/{filename}; two-step flow (create report → upload → update image_url); signed URLs for display.
+- Payments: keep status/payment_method/payment_date canonical; add qris method + payment_reference/payment_url/paid_at additive; no real gateway; simulation clearly labeled.
+- Navigation owner: Dashboard, Kamar, Penghuni, Pembayaran, Laporan (operational/maintenance), Laporan Keuangan, Pengaturan. Tenant: Dashboard, Kamar Saya, Pembayaran, Laporan Saya (maintenance), Riwayat (payment/rental history), Profil. RLS enforces, not menu hiding.

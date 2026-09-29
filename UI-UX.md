@@ -156,3 +156,26 @@ Pada window kecil:
 ## Motion
 
 Gerakan halus untuk sidebar collapse dan transisi page/dialog — jangan berlebihan.
+
+---
+
+# v2.0 UI Delta (no redesign, additive only)
+
+## Navigation
+- Owner: Dashboard, Kamar, Penghuni, Pembayaran, Laporan (operational/maintenance), Laporan Keuangan, Pengaturan.
+- Tenant: Dashboard, Kamar Saya, Pembayaran, Laporan Saya, Riwayat, Profil.
+
+## Facilities
+- Room create/edit: CHECKBOX list + [ + Tambahkan Fasilitas ] inline (input nama → save → muncul + auto-checked). Inactive hidden default. Legacy text tidak diedit manual.
+
+## Rental
+- Countdown badge: >30 normal, 15–30 attention, 7–14 soon, 1–6 very soon, 0 expired, <0 past due. Tanggal format id-ID Asia/Jakarta.
+
+## Maintenance
+- Tenant form: title/desc/category/priority + foto (step 2 setelah create); status timeline submitted→in_progress→resolved→closed; owner table + filter status/category/priority + aksi proses/resolve/close.
+
+## Payments
+- Tenant bill card: nominal, due, status badge, pilih metode (cash/transfer/ewallet/qris), [Bayar Sekarang] → simulasi dialog berlabel SIMULASI; history list. Copy Indonesia.
+
+## Dashboards
+- Owner: KPI existing + maintenance baru/in-progress + expiry + due. Tenant: Halo {nama}, kamar, Rp/bulan, masa sewa countdown, berakhir, tagihan, status, [Bayar Sekarang], Laporan Saya. Empty states informatif. Tanpa trend palsu.

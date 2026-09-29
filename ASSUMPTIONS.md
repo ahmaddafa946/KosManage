@@ -36,3 +36,20 @@ Jika requirement bentrok, urutan prioritas:
 ## Catatan prototype
 
 Prototype harus sederhana, tetapi foundation (schema, RLS, ownership, validation) harus benar. Jangan menonaktifkan RLS atau memakai service-role key di client untuk “mempercepat” development.
+
+---
+
+# v2.0 Assumptions Append (D1–D9)
+
+| ID | Asumsi | Dampak jika berubah |
+|----|--------|---------------------|
+| AS-016 | profiles.role owner/tenant; default owner existing | Role tambahan = RLS ulang |
+| AS-017 | profiles.email display copy; auth.users.email auth source | Sync strategy berubah bila single-source |
+| AS-018 | tenants.profile_id link; 1 active per profile | Multi-tenancy aktif = constraint ulang |
+| AS-019 | rooms.facilities legacy preserved read-only | Drop kolom = migrasi destruktif terpisah |
+| AS-020 | private.is_property_owner hardened (D5) | Ganti model helper = review semua policy |
+| AS-021 | Storage private maintenance-reports + signed URL | Public bucket = threat model ulang |
+| AS-022 | days_remaining computed Asia/Jakarta, tidak disimpan | Persist = sync/trigger baru |
+| AS-023 | Laporan vs Laporan Keuangan split (D8) | Gabung = nav/report refactor |
+| AS-024 | Payment gateway nyata out of scope; simulasi berlabel | Gateway nyata = PCI/webhook scope baru |
+| AS-025 | Baseline produk v1.0; metadata 0.1.0 legacy sync di final v2.0 | Rilis perantara = versi +0.5 sia-sia |
