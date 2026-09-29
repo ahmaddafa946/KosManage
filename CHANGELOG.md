@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 4 COMPLETE — rental countdown utility (computed, no DB change)
+- src/lib/rental.ts: Jakarta calendar-date daysRemaining, 7 buckets incl. open_ended, id labels.
+- Tests 62/62 (19 rental incl. midnight-boundary + leap + invalid), typecheck, build PASS.
+
 ### Slice 3 COMPLETE — master facilities + room assignments (live verified)
 - facilities master per property (unique property_id + lower(btrim(name))); room_facilities M2M (CASCADE room, RESTRICT facility).
 - Corrective migration for legacy '+' delimiter: 5 facilities + 5 links live; legacy rooms.facilities untouched; artifacts removed via captured IDs.

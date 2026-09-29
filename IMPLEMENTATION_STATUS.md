@@ -97,3 +97,9 @@ Progress ledger for KosManage implementation.
 - UI: checkbox + inline add auto-selected; legacy column read-only fallback.
 - Live: 5 facilities, 5 links, legacy utuh, 0 dup, 0 artifact, RLS PASS.
 - Tests 43/43 PASS. Typecheck PASS. Build PASS. Slice 4+ not started.
+
+## Slice 4 — rental period (T4.1 COMPLETE)
+- Utility daysRemaining Asia/Jakarta (Intl en-CA date key, epoch-day diff; no date lib).
+- Bucket: normal/attention/soon/very_soon/expired/past_due/open_ended; null end_date -> null.
+- Invalid YYYY-MM-DD fail safe -> null. Computed only, never persisted.
+- Tests 62/62 PASS (19 rental). Typecheck PASS. Build PASS. No migration/DB change.

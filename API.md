@@ -149,3 +149,6 @@ Technical details → developer console/logs only.
 
 ## STORAGE
 - getReportSignedUrl(reportId) — signed URL private; upload path {property_id}/{tenant_id}/{report_id}/{filename}.
+
+## Rental utility (Slice 4, client-local)
+- getJakartaDateKey/calculateDaysRemaining/getRentalBucket/getRentalStatus/formatDaysRemaining in src/lib/rental.ts. Pure, no network.

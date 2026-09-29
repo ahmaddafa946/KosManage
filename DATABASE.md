@@ -264,3 +264,6 @@ Avoid unbounded selects without filters as data grows.
 
 ## Migration strategy
 - Satu/lebih migration additive berurutan: 1) profiles+tenants link 2) facilities+M2M+legacy backfill 3) maintenance_reports 4) payments additive 5) helper private + RLS + storage. Backfill non-destruktif; rollback = drop new objects only.
+
+## daysRemaining (computed, NOT stored)
+- Derived in src/lib/rental.ts from tenants.end_date vs Jakarta calendar date. No column, no trigger.

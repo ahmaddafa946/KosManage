@@ -53,7 +53,7 @@
   - Files: src/pages/RoomsPage.tsx, src/services/facilities.ts, src/schemas/*
 
 ## Slice 4 — rental
-- [ ] T4.1 daysRemaining Asia/Jakarta + buckets
+- [x] T4.1 daysRemaining Asia/Jakarta + buckets (rental.ts + 19 tests, computed only)
   - Acceptance: FR-100; >30/30/15/7/1/0/negatif
   - Verify: deterministik unit tests
   - Files: src/lib/rental.ts, tests

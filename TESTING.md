@@ -94,3 +94,6 @@ Run after migration + seed:
 - PAYMENTS: qris accepted; reference/url/paid_at additive; status trigger tetap; ownership + tenant isolation + owner property isolation; simulasi label.
 - SECURITY/RLS: owner A vs B; tenant A vs B; tenant block owner fields; tenant block report ownership change; storage tenant-own vs owner-property.
 - Util tests: daysRemaining, rentalBucket, facility normalize, payment simulation label. Integration: backfill legacy non-destruktif. E2E: owner login, tenant login, facilities checkbox, countdown, report+photo, status flow, payment sim, dashboards, profile, logout.
+
+## Rental countdown (Slice 4)
+- 19 tests: boundaries 0/1/6/7/14/15/30/31, past-due, null open-ended, Jakarta midnight, leap, invalid; deterministic via injected now.
