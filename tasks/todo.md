@@ -77,7 +77,7 @@
   - Files: supabase/migrations/*, src/pages/*, tests
 
 ## Slice 8/9 — dashboards
-- [ ] T8.1 owner KPI expansion (data nyata)
+- [x] T8.1 owner KPI expansion (data nyata)
 - [ ] T9.1 tenant dashboard + empty states
 
 ## Slice 10 — profile

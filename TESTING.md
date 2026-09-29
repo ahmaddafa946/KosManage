@@ -104,3 +104,5 @@ Run after migration + seed:
 
 ## Maintenance photos (Slice 6)
 - 10 tests: MIME/size/ext/filename/path-format/two-step order/narrow-attach/signed-URL-null. Live checklist in migration section 4.
+
+- Slice 8 dashboard: expiry window 0..30 (today in, yesterday/31/null out, inactive out, injected Jakarta now), remainingAmount clamp, overdue-first sort, maintenance labels 4 status resmi.

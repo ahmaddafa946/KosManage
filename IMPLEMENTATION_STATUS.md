@@ -119,3 +119,7 @@ Progress ledger for KosManage implementation.
 - RPC start_simulated_payment SECURITY DEFINER search_path='': id+method only, ownership via profile_id=auth.uid(), full-pay SIMULASI-*, idempotent, EXECUTE authenticated-only, payment_url=NULL.
 - UI: owner QRIS; tenant /tenant/payments SIMULASI explicit confirm + history.
 - Tests 102/102 local. Typecheck PASS. Build PASS. Live migration NOT applied.
+
+## Slice 8 — owner dashboard expansion (T8.1 COMPLETE, no migration)
+- KPI FR-010..013 preserved. Maintenance aktif/in_progress + recent 5. Upcoming rental expiry 0–30 Jakarta days via src/lib/rental.ts (past_due/open-ended excluded). Payments due renamed/sorted overdue-first.
+- No fake trends. No DB migration. Tests 108/108 local. Typecheck PASS. Build PASS.

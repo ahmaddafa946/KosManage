@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 8 COMPLETE — owner dashboard expansion (no migration)
+- Existing KPI preserved (FR-010..013). Added Laporan Maintenance (aktif + sedang diproses + 5 terbaru), sewa berakhir 0–30 hari Jakarta via rental.ts, Pembayaran Perlu Ditindaklanjuti (overdue dulu).
+- Data nyata only; no fake trend. Tests 108/108 local, typecheck, build PASS.
+
 ### Slice 7 COMPLETE — payment expansion + simulated tenant payment (migration pending manual apply)
 - Additive: payment_reference/payment_url/paid_at + qris in method CHECK; status trigger + canonical columns preserved.
 - Tenant: SELECT own only (rename-consolidate, incl. history); NO tenant INSERT/UPDATE/DELETE; completion only via SECURITY DEFINER RPC start_simulated_payment (id+method, full-pay SIMULASI-*, idempotent, search_path='' , EXECUTE authenticated-only).

@@ -1,5 +1,5 @@
 import { Badge } from '@/components/ui/badge';
-import type { PaymentStatus, RoomStatus } from '@/types/database';
+import type { PaymentStatus, RoomStatus, MaintenanceStatus } from '@/types/database';
 
 const ROOM_LABEL: Record<RoomStatus, string> = {
   available: 'Kosong',
@@ -23,4 +23,17 @@ export function PaymentStatusBadge({ status }: { status: PaymentStatus }) {
   const variant =
     status === 'paid' ? 'success' : status === 'partial' ? 'warning' : status === 'overdue' ? 'destructive' : 'secondary';
   return <Badge variant={variant}>{PAY_LABEL[status]}</Badge>;
+}
+
+const MAINT_LABEL: Record<MaintenanceStatus, string> = {
+  submitted: 'Diajukan',
+  in_progress: 'Sedang Diproses',
+  resolved: 'Selesai',
+  closed: 'Ditutup',
+};
+
+export function MaintenanceStatusBadge({ status }: { status: MaintenanceStatus }) {
+  const variant =
+    status === 'in_progress' ? 'warning' : status === 'submitted' ? 'secondary' : status === 'resolved' ? 'success' : 'secondary';
+  return <Badge variant={variant}>{MAINT_LABEL[status]}</Badge>;
 }

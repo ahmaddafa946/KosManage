@@ -88,6 +88,9 @@ Do **not** send authoritative `status` from the client; ignore or omit and let t
 | `getRecentPayments` | Latest N payments (e.g. 5–10) with tenant/room labels |
 | `getOutstandingPayments` | `status in ('unpaid','partial','overdue')` |
 | `getUpcomingPayments` | Unpaid/partial near `due_date` (e.g. next 14 days) plus overdue for action list |
+| `getOutstandingPayments` (v2.0) | Sorted overdue first, then earliest `due_date`; UI label `Pembayaran Perlu Ditindaklanjuti`; remaining = max(0, due - paid) display only |
+| `getMaintenanceDashboard` | `maintenance_reports` status submitted/in_progress: activeTotal, inProgress (only `in_progress`), recent 5 with room/tenant label; RLS owner |
+| `getUpcomingRentalExpiries` | Active tenants with `end_date` 0..30 Jakarta calendar days (via `src/lib/rental.ts`); past_due + open-ended excluded; never persisted |
 
 Prefer few aggregated queries over many row fetches.
 
