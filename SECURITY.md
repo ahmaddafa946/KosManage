@@ -141,3 +141,4 @@ SEC-001 … SEC-008 in `REQUIREMENTS.md`. Schema details in `DATABASE.md`. Agent
 - Owner lane: 4 policies via private.is_property_owner(property_id); UPDATE USING + WITH CHECK.
 - Tenant lane: select/insert/update own active tenant chain (tenants.profile_id = auth.uid()); tenant cannot set resolved/closed (RLS scope + trigger non-owner backstop).
 - Triggers INVOKER + search_path='' + revoke all incl. service_role. No Storage in Slice 5.
+- Least-privilege grants (corrective 20260929190100): authenticated = SELECT/INSERT/UPDATE only; DELETE/TRUNCATE/REFERENCES/TRIGGER revoked; PUBLIC/anon denied.
