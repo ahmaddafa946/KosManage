@@ -112,3 +112,10 @@ Progress ledger for KosManage implementation.
 ## Slice 6 — private maintenance photo storage (T6.1 implementation COMPLETE, live apply pending)
 - Bucket private 5MB images; 3 storage policies; image_url guard trigger; service 2-step + signed URL.
 - Tests 85/85 local. Typecheck PASS. Build PASS. Live migration NOT applied.
+
+## Slice 7 — payment expansion + simulated tenant payment (T7.1 implementation COMPLETE, live apply pending)
+- Additive: payment_reference/payment_url/paid_at + qris CHECK; status/payment_date/status-trigger preserved.
+- RLS: payments_select_own_tenant (own incl. history, no active gate) kept; NO tenant INSERT/UPDATE/DELETE.
+- RPC start_simulated_payment SECURITY DEFINER search_path='': id+method only, ownership via profile_id=auth.uid(), full-pay SIMULASI-*, idempotent, EXECUTE authenticated-only, payment_url=NULL.
+- UI: owner QRIS; tenant /tenant/payments SIMULASI explicit confirm + history.
+- Tests 102/102 local. Typecheck PASS. Build PASS. Live migration NOT applied.

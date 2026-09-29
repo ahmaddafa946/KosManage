@@ -137,6 +137,12 @@ SEC-001 … SEC-008 in `REQUIREMENTS.md`. Schema details in `DATABASE.md`. Agent
 - Storage: bucket maintenance-reports PRIVATE; Storage RLS tenant-own vs owner-property; path первым segmen property_id; signed URL display; validasi MIME/size/ownership di client+policy; tanpa service_role di client; tanpa secret hardcoded.
 - PII: identity_number/payment fields hanya via RLS owner/own.
 
+## Payments (Slice 7, FR-120..122)
+- Tenant: SELECT own only (payments_select_tenant_history, incl. history, no active gate); NO tenant INSERT/UPDATE/DELETE — mencegah tenant paksa amount_paid=amount_due.
+- Simulated completion hanya via RPC start_simulated_payment (SECURITY DEFINER, search_path='', input payment_id+method only, ownership profile_id=auth.uid(), amount DB-authoritative full-pay, idempotent, EXECUTE authenticated-only, revoke anon/public).
+- payment_url=NULL selama simulasi (tanpa fake gateway URL); payment_reference display-only SIMULASI-<id8>; paid_at set DB.
+- Real gateway OUT OF SCOPE; tanpa service_role di client; tanpa user_metadata authorization.
+
 ## Maintenance reports (Slice 5, FR-112)
 - Owner lane: 4 policies via private.is_property_owner(property_id); UPDATE USING + WITH CHECK.
 - Tenant lane: select/insert/update own active tenant chain (tenants.profile_id = auth.uid()); tenant cannot set resolved/closed (RLS scope + trigger non-owner backstop).

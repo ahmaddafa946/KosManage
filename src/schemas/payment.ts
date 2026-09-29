@@ -7,8 +7,13 @@ export const paymentSchema = z.object({
   amount_due: z.coerce.number({ invalid_type_error: 'Tagihan harus berupa angka.' }).min(0, 'Tagihan tidak boleh negatif.'),
   amount_paid: z.coerce.number({ invalid_type_error: 'Jumlah dibayar harus berupa angka.' }).min(0, 'Jumlah dibayar tidak boleh negatif.').default(0),
   payment_date: z.string().nullable().optional(),
-  payment_method: z.enum(['cash', 'transfer', 'ewallet']).nullable().optional(),
+  payment_method: z.enum(['cash', 'transfer', 'ewallet', 'qris']).nullable().optional(),
   notes: z.string().max(1000, 'Catatan maksimal 1000 karakter.').nullable().optional(),
 });
 
 export type PaymentInput = z.infer<typeof paymentSchema>;
+
+export const paymentMethodSchema = z.enum(['cash', 'transfer', 'ewallet', 'qris']);
+export const tenantPaymentMethodSchema = z.object({
+  payment_method: paymentMethodSchema,
+});

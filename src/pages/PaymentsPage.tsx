@@ -126,7 +126,7 @@ export default function PaymentsPage() {
         </Select>
         <Select value={fMethod} onValueChange={(v) => setFMethod(v as PaymentMethod | 'all')}>
           <SelectTrigger className="w-40" aria-label="Filter metode"><SelectValue placeholder="Semua metode" /></SelectTrigger>
-          <SelectContent><SelectItem value="all">Semua metode</SelectItem><SelectItem value="cash">Cash</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="ewallet">E-Wallet</SelectItem></SelectContent>
+          <SelectContent><SelectItem value="all">Semua metode</SelectItem><SelectItem value="cash">Cash</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="ewallet">E-Wallet</SelectItem><SelectItem value="qris">QRIS</SelectItem></SelectContent>
         </Select>
         <Button variant="outline" onClick={() => void load()}>Terapkan</Button>
         <Button onClick={openCreate}><Plus className="h-4 w-4" /> Catat Pembayaran</Button>
@@ -192,7 +192,7 @@ export default function PaymentsPage() {
               <div className="space-y-1"><Label>Metode</Label>
                 <Select value={form.payment_method ?? ''} onValueChange={(v) => setForm({ ...form, payment_method: (v === '' ? null : v) as PaymentMethod | null })}>
                   <SelectTrigger><SelectValue placeholder="Pilih metode" /></SelectTrigger>
-                  <SelectContent><SelectItem value="cash">Cash</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="ewallet">E-Wallet</SelectItem></SelectContent>
+                  <SelectContent><SelectItem value="cash">Cash</SelectItem><SelectItem value="transfer">Transfer</SelectItem><SelectItem value="ewallet">E-Wallet</SelectItem><SelectItem value="qris">QRIS</SelectItem></SelectContent>
                 </Select>
               </div>
             </div>

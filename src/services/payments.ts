@@ -63,3 +63,35 @@ export async function deletePayment(id: string): Promise<void> {
   const { error } = await supabase.from('payments').delete().eq('id', id);
   if (error) throw error;
 }
+
+// ---------------------------------------------------------------------------
+// Tenant bills + SIMULASI flow. Tenant never writes payments directly:
+// completion goes through the start_simulated_payment RPC (no amount input).
+// ---------------------------------------------------------------------------
+
+export async function getMyBills(): Promise<Payment[]> {
+  const { data, error } = await supabase
+    .from('payments')
+    .select('*, room:rooms!payments_room_id_fkey(id,room_number)')
+    .order('due_date', { ascending: false });
+  if (error) throw error;
+  return data as unknown as Payment[];
+}
+
+export async function startSimulatedPayment(paymentId: string, method: PaymentMethod): Promise<Payment> {
+  const { data, error } = await supabase.rpc('start_simulated_payment', {
+    p_payment_id: paymentId,
+    p_payment_method: method,
+  });
+  if (error) throw new Error(mapPaymentError(error.message));
+  return data as Payment;
+}
+
+function mapPaymentError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes('not authenticated')) return 'Anda harus masuk terlebih dahulu.';
+  if (m.includes('invalid payment method')) return 'Metode pembayaran tidak valid.';
+  if (m.includes('payment not found')) return 'Tagihan tidak ditemukan.';
+  if (m.includes('access denied')) return 'Akses ditolak. Tagihan ini bukan milik Anda.';
+  return 'Pembayaran simulasi gagal. Coba lagi.';
+}

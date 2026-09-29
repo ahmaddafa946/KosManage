@@ -122,7 +122,7 @@ erDiagram
 | amount_due | numeric(12,2) | NO | CHECK `>= 0` |
 | amount_paid | numeric(12,2) | NO | default 0, CHECK `>= 0` |
 | payment_date | date | YES | |
-| payment_method | text | YES | `cash` \| `transfer` \| `ewallet` |
+| payment_method | text | YES | `cash` \| `transfer` \| `ewallet` \| `qris` |
 | status | text | NO | computed: `unpaid` \| `partial` \| `paid` \| `overdue` |
 | notes | text | YES | |
 | created_at | timestamptz | NO | default `now()` |
@@ -132,7 +132,7 @@ erDiagram
 - `UNIQUE (tenant_id, billing_period)`
 - `CHECK (amount_due >= 0 AND amount_paid >= 0)`
 - `CHECK (status IN ('unpaid','partial','paid','overdue'))`
-- `CHECK (payment_method IS NULL OR payment_method IN ('cash','transfer','ewallet'))`
+- `CHECK (payment_method IS NULL OR payment_method IN ('cash','transfer','ewallet','qris'))`
 - `CHECK (billing_period ~ '^[0-9]{4}-[0-9]{2}$')`
 
 **Indexes:**

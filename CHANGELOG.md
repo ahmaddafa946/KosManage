@@ -1,6 +1,12 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 7 COMPLETE — payment expansion + simulated tenant payment (migration pending manual apply)
+- Additive: payment_reference/payment_url/paid_at + qris in method CHECK; status trigger + canonical columns preserved.
+- Tenant: SELECT own only (rename-consolidate, incl. history); NO tenant INSERT/UPDATE/DELETE; completion only via SECURITY DEFINER RPC start_simulated_payment (id+method, full-pay SIMULASI-*, idempotent, search_path='' , EXECUTE authenticated-only).
+- UI: owner QRIS option; tenant /tenant/payments bills + method select + explicit SIMULASI confirm + history.
+- Real gateway OUT OF SCOPE (FR-122). Tests 102/102 local, typecheck, build PASS. Live apply NOT done.
+
 ### Slice 6 COMPLETE — private maintenance photo storage (migration pending manual apply)
 - Private bucket + 3 Storage RLS + image_url guard trigger + 2-step service + signed URL display.
 - Tests 85/85 local, typecheck, build PASS. Live apply NOT done.

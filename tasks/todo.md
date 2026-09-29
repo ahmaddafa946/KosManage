@@ -71,7 +71,7 @@
   - Files: supabase/migrations/*, src/services/*, SECURITY.md
 
 ## Slice 7 — payments
-- [ ] T7.1 additive + qris + simulasi
+- [x] T7.1 additive + qris + simulasi
   - Acceptance: FR-120/121; trigger intact; SIMULASI label
   - Verify: status/ownership/isolation tests
   - Files: supabase/migrations/*, src/pages/*, tests

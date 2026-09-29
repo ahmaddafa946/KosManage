@@ -1,6 +1,6 @@
 export type RoomStatus = 'available' | 'occupied' | 'maintenance';
 export type TenantStatus = 'active' | 'inactive';
-export type PaymentMethod = 'cash' | 'transfer' | 'ewallet';
+export type PaymentMethod = 'cash' | 'transfer' | 'ewallet' | 'qris';
 export type PaymentStatus = 'unpaid' | 'partial' | 'paid' | 'overdue';
 
 export type UserRole = 'owner' | 'tenant';
@@ -72,6 +72,9 @@ export interface Payment {
   payment_date: string | null;
   payment_method: PaymentMethod | null;
   status: PaymentStatus;
+  payment_reference: string | null;
+  payment_url: string | null;
+  paid_at: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
