@@ -89,3 +89,18 @@ export interface DashboardSummary {
   monthlyRevenue: number;
   totalOutstanding: number;
 }
+
+export interface Facility {
+  id: string;
+  property_id: string;
+  name: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RoomFacility {
+  room_id: string;
+  facility_id: string;
+  created_at: string;
+}

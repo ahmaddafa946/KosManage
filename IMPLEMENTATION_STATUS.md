@@ -90,3 +90,10 @@ Progress ledger for KosManage implementation.
 - RoleGuard: unauth->login; invalid role fail closed; cross-role redirect deterministic (getHomePath), no loop.
 - Tests 27/27 PASS (14 baru: guard matrix + nav D8). Typecheck PASS. Build PASS.
 - Slice 1 notes + security backlog unchanged. No migration/DB change.
+
+## Slice 3 COMPLETE — facilities + room assignments (T3.1/T3.2, live verified)
+- Tables: facilities, room_facilities; unique (property_id, lower(btrim(name))); backfill INSERT-only; corrective for '+' delimiter.
+- RLS: 4 owner + 1 tenant-read per table; cross-property guard r.property_id = f.property_id on INSERT/UPDATE.
+- UI: checkbox + inline add auto-selected; legacy column read-only fallback.
+- Live: 5 facilities, 5 links, legacy utuh, 0 dup, 0 artifact, RLS PASS.
+- Tests 43/43 PASS. Typecheck PASS. Build PASS. Slice 4+ not started.

@@ -240,13 +240,13 @@ Avoid unbounded selects without filters as data grows.
 
 ## facilities (new)
 - id uuid PK; property_id FK→properties CASCADE; name text NOT NULL; is_active bool DEFAULT true; timestamps
-- UNIQUE (property_id, lower(name)) — final expression di migration; idx_facilities_property.
+- UNIQUE (property_id, (lower(btrim(name)))) — final di migration; idx_facilities_property + partial active.
 
 ## room_facilities (new M2M)
 - room_id FK→rooms CASCADE; facility_id FK→facilities RESTRICT/CASCADE (final: CASCADE on room, RESTRICT on facility bila dipakai); PK (room_id, facility_id).
 
 ## rooms.facilities legacy
-- PRESERVE; tandai DEPRECATED read-only; migrasi parse comma → master per property; stop write baru (UI checkbox only).
+- PRESERVE; DEPRECATED read-only; migrasi parse '+' dan ',' → master per property (corrective 20260331); stop write baru (UI checkbox only).
 
 ## maintenance_reports (new)
 - id PK; property_id FK CASCADE; room_id FK SET NULL; tenant_id FK RESTRICT; title; description; category CHECK (AC/electrical/plumbing/furniture/internet/other); priority (low/medium/high); status (submitted/in_progress/resolved/closed) DEFAULT submitted; image_url NULL; created_at/updated_at; resolved_at NULL.

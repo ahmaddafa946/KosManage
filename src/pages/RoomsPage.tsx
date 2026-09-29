@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus, Search, Pencil, Trash2 } from 'lucide-react';
 import { useProperty } from '@/hooks/useProperty';
 import { getRooms, createRoom, updateRoom, deleteRoom, type RoomFilters } from '@/services/rooms';
+import { getFacilities, createFacility, getRoomFacilityMap, setRoomFacilities, mergeFacilitySelection } from '@/services/facilities';
+import type { Facility } from '@/types/database';
 import { roomSchema, type RoomInput } from '@/schemas/room';
 import { mapSupabaseError } from '@/lib/errors';
 import { formatRupiah } from '@/lib/utils';
@@ -16,7 +18,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { RoomStatusBadge } from '@/components/StatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const EMPTY: RoomInput = { room_number: '', floor: null, price: 0, status: 'available', facilities: '', notes: '' };
+const EMPTY: RoomInput = { room_number: '', floor: null, price: 0, status: 'available', notes: '' };
 
 export default function RoomsPage() {
   const { property, loading: propLoading } = useProperty();
@@ -31,13 +33,37 @@ export default function RoomsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Room | null>(null);
+  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [selectedFacilities, setSelectedFacilities] = useState<string[]>([]);
+  const [newFacilityName, setNewFacilityName] = useState('');
+  const [addingFacility, setAddingFacility] = useState(false);
+  const [roomFacilityNames, setRoomFacilityNames] = useState<Record<string, string>>({});
+  const facilitiesCache = useRef<Facility[]>([]);
 
   async function load() {
     if (!property) return;
     setLoading(true);
     try {
+      const master = await getFacilities(property.id);
+      setFacilities(master);
+      facilitiesCache.current = master;
       const filters: RoomFilters = { q: q || undefined, status };
-      setRooms(await getRooms(property.id, filters));
+      const list = await getRooms(property.id, filters);
+      setRooms(list);
+      try {
+        const map = await getRoomFacilityMap(list.map((r) => r.id));
+        const byId = new Map(facilitiesCache.current.map((f) => [f.id, f.name]));
+        const names: Record<string, string> = {};
+        for (const r of list) {
+          const ids = map[r.id] ?? [];
+          names[r.id] = ids.length > 0 ? ids.map((id) => byId.get(id) ?? '…').join(', ') : (r.facilities ?? '-');
+        }
+        setRoomFacilityNames(names);
+      } catch {
+        const names: Record<string, string> = {};
+        for (const r of list) names[r.id] = r.facilities ?? '-';
+        setRoomFacilityNames(names);
+      }
       setError(null);
     } catch (e) {
       setError(mapSupabaseError(e));
@@ -54,15 +80,25 @@ export default function RoomsPage() {
   function openCreate() {
     setEditing(null);
     setForm(EMPTY);
+    setSelectedFacilities([]);
+    setNewFacilityName('');
     setFormError(null);
     setDialogOpen(true);
   }
 
-  function openEdit(r: Room) {
+  async function openEdit(r: Room) {
     setEditing(r);
-    setForm({ room_number: r.room_number, floor: r.floor, price: Number(r.price), status: r.status, facilities: r.facilities ?? '', notes: r.notes ?? '' });
+    setForm({ room_number: r.room_number, floor: r.floor, price: Number(r.price), status: r.status, notes: r.notes ?? '' });
+    setNewFacilityName('');
     setFormError(null);
     setDialogOpen(true);
+    // Preselect M2M links; inactive-linked ids preserved on save.
+    try {
+      const map = await getRoomFacilityMap([r.id]);
+      setSelectedFacilities(map[r.id] ?? []);
+    } catch {
+      setSelectedFacilities([]);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -76,8 +112,20 @@ export default function RoomsPage() {
     setBusy(true);
     setFormError(null);
     try {
-      if (editing) await updateRoom(editing.id, parsed.data);
-      else await createRoom(property.id, parsed.data);
+      // Preserve links to inactive facilities (hidden from checkboxes).
+      const activeIds = new Set(facilities.map((f) => f.id));
+      const preserved = selectedFacilities.filter((id) => !activeIds.has(id));
+      const checked = selectedFacilities.filter((id) => activeIds.has(id));
+      const merged = mergeFacilitySelection(checked, preserved);
+      let roomId: string;
+      if (editing) {
+        await updateRoom(editing.id, parsed.data);
+        roomId = editing.id;
+      } else {
+        const created = await createRoom(property.id, parsed.data);
+        roomId = created.id;
+      }
+      await setRoomFacilities(roomId, merged);
       setDialogOpen(false);
       await load();
     } catch (err) {
@@ -143,7 +191,7 @@ export default function RoomsPage() {
                     <TableCell>{r.floor ?? '-'}</TableCell>
                     <TableCell>{formatRupiah(Number(r.price))}</TableCell>
                     <TableCell><RoomStatusBadge status={r.status} /></TableCell>
-                    <TableCell className="max-w-48 truncate">{r.facilities ?? '-'}</TableCell>
+                    <TableCell className="max-w-48 truncate">{roomFacilityNames[r.id] ?? r.facilities ?? '-'}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="sm" onClick={() => openEdit(r)} aria-label={`Ubah kamar ${r.room_number}`}><Pencil className="h-4 w-4" /></Button>
                       <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(r)} aria-label={`Hapus kamar ${r.room_number}`}><Trash2 className="h-4 w-4 text-destructive" /></Button>
@@ -173,7 +221,61 @@ export default function RoomsPage() {
                 </Select>
               </div>
             </div>
-            <div className="space-y-1"><Label htmlFor="facilities">Fasilitas</Label><Input id="facilities" value={form.facilities ?? ''} onChange={(e) => setForm({ ...form, facilities: e.target.value })} disabled={busy} /></div>
+            <div className="space-y-2">
+              <Label>Fasilitas</Label>
+              {facilities.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Belum ada fasilitas. Tambahkan di bawah.</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-2" role="group" aria-label="Pilih fasilitas">
+                  {facilities.map((f) => (
+                    <label key={f.id} className="flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                      <input
+                        type="checkbox"
+                        className="h-4 w-4 accent-primary"
+                        checked={selectedFacilities.includes(f.id)}
+                        disabled={busy}
+                        onChange={(e) =>
+                          setSelectedFacilities((prev) =>
+                            e.target.checked ? [...prev, f.id] : prev.filter((id) => id !== f.id)
+                          )
+                        }
+                      />
+                      {f.name}
+                    </label>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  placeholder="+ Tambahkan Fasilitas"
+                  value={newFacilityName}
+                  onChange={(e) => setNewFacilityName(e.target.value)}
+                  disabled={busy || addingFacility}
+                  aria-label="Nama fasilitas baru"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={busy || addingFacility || !property || newFacilityName.trim() === ''}
+                  onClick={async () => {
+                    if (!property) return;
+                    setAddingFacility(true);
+                    try {
+                      const created = await createFacility(property.id, newFacilityName);
+                      setFacilities((prev) => [...prev, created].sort((a, b) => a.name.localeCompare(b.name)));
+                      setSelectedFacilities((prev) => [...prev, created.id]);
+                      setNewFacilityName('');
+                    } catch (e) {
+                      setFormError(mapSupabaseError(e));
+                    } finally {
+                      setAddingFacility(false);
+                    }
+                  }}
+                >
+                  {addingFacility ? 'Menambah...' : 'Tambah'}
+                </Button>
+              </div>
+            </div>
             <div className="space-y-1"><Label htmlFor="notes">Catatan</Label><Input id="notes" value={form.notes ?? ''} onChange={(e) => setForm({ ...form, notes: e.target.value })} disabled={busy} /></div>
             {formError && <p role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{formError}</p>}
             <DialogFooter><Button type="button" variant="outline" onClick={() => setDialogOpen(false)} disabled={busy}>Batal</Button><Button type="submit" disabled={busy}>{busy ? 'Menyimpan...' : 'Simpan'}</Button></DialogFooter>

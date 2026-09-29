@@ -43,11 +43,11 @@
   - Files: src/layouts/*, src/App.tsx
 
 ## Slice 3 — facilities
-- [ ] T3.1 facilities + room_facilities + backfill
+- [x] T3.1 facilities + room_facilities + backfill (applied live, verified: 5 facilities + 5 links)
   - Acceptance: unique per property; non-destruktif
   - Verify: backfill test; duplicate rejected
   - Files: supabase/migrations/*, tests
-- [ ] T3.2 checkbox + inline add auto-selected
+- [x] T3.2 checkbox + inline add auto-selected (checkbox UI + inline add auto-selected, inactive preserved)
   - Acceptance: FR-092 harfiah
   - Verify: component tests
   - Files: src/pages/RoomsPage.tsx, src/services/facilities.ts, src/schemas/*
