@@ -55,3 +55,5 @@ Prototype harus sederhana, tetapi foundation (schema, RLS, ownership, validation
 | AS-025 | Baseline produk v1.0; metadata 0.1.0 legacy sync di final v2.0 | Rilis perantara = versi +0.5 sia-sia |
 
 | AS-030 | Maintenance forward-only, no skip/reopen; NO delete (FR-110..112 never grant it — v1 parity is not a permit); report room = tenant current room; resolved_at retained on closed | Narrowest FR-111; review 2026-09-30 removed invented owner-delete |
+
+| AS-031 | Photo max 5MB; MIME JPEG/PNG/WebP; signed URL TTL 1h; no photo replacement/deletion (single image_url) | SSOT silent on exact limits — conservative MVP; bucket + RLS authoritative |

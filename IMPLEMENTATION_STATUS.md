@@ -108,3 +108,7 @@ Progress ledger for KosManage implementation.
 - Table + 5 indexes + updated_at reuse + 2 INVOKER triggers (revoked) + 7 policies (3 owner, 3 tenant).
 - Lifecycle forward-only; resolved_at DB-authoritative; tenant lane cannot change status.
 - Tests 75/75 PASS. Typecheck PASS. Build PASS. Live migration NOT applied — verification after manual apply.
+
+## Slice 6 — private maintenance photo storage (T6.1 implementation COMPLETE, live apply pending)
+- Bucket private 5MB images; 3 storage policies; image_url guard trigger; service 2-step + signed URL.
+- Tests 85/85 local. Typecheck PASS. Build PASS. Live migration NOT applied.

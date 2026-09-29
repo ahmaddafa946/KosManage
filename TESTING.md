@@ -101,3 +101,6 @@ Run after migration + seed:
 ## Maintenance (Slice 5)
 - Grants check (role_table_grants): authenticated SELECT/INSERT/UPDATE yes, DELETE/TRUNCATE/REFERENCES/TRIGGER absent.
 - 26 tests: 4 lifecycle matrix + 13 Zod (incl. forbidden-field strip) + 1 service contract (no storage fns) + 8 existing-adjacent. Live checklist in migration section 5 (table/constraints/indexes/policies/functions/grants/counts).
+
+## Maintenance photos (Slice 6)
+- 10 tests: MIME/size/ext/filename/path-format/two-step order/narrow-attach/signed-URL-null. Live checklist in migration section 4.

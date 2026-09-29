@@ -273,3 +273,7 @@ Avoid unbounded selects without filters as data grows.
 - Lifecycle source of truth: forward-only submitted->in_progress->resolved->closed (trigger guard_maintenance_transition). resolved_at set on resolve, retained on closed, else NULL.
 - Integrity trigger: tenant.property match, room match + tenant current room, active-tenant INSERT.
 - Indexes: property_id, tenant_id, status, (property_id, status), room_id.
+
+## Maintenance photo storage (Slice 6 implementation)
+- Bucket maintenance-reports PRIVATE, 5MB, JPEG/PNG/WebP. Path {property_id}/{tenant_id}/{report_id}/{filename}.
+- image_url stores OBJECT PATH, never signed URL. Trigger guard_maintenance_image_url enforces prefix + rejects URLs/traversal.

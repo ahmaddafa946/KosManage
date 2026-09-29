@@ -65,7 +65,7 @@
   - Files: supabase/migrations/*, src/services/maintenance.ts, src/schemas/*
 
 ## Slice 6 — storage
-- [ ] T6.1 private bucket + RLS + 2-step + signed URL
+- [x] T6.1 private bucket + RLS + 2-step + signed URL (code+tests PASS; migration pending manual apply)
   - Acceptance: D6/D9 harfiah
   - Verify: MIME/size/ownership tests
   - Files: supabase/migrations/*, src/services/*, SECURITY.md

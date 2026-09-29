@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 6 COMPLETE — private maintenance photo storage (migration pending manual apply)
+- Private bucket + 3 Storage RLS + image_url guard trigger + 2-step service + signed URL display.
+- Tests 85/85 local, typecheck, build PASS. Live apply NOT done.
+
 ### Slice 5 COMPLETE — maintenance reports lifecycle (migration pending manual apply)
 - maintenance_reports table + forward-only lifecycle trigger + integrity trigger + 7 RLS policies.
 - Zod create/tenant-update/owner-update schemas; service without storage (Slice 6).

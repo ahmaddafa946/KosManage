@@ -156,3 +156,8 @@ Technical details → developer console/logs only.
 ## Maintenance (Slice 5, no storage yet)
 - getMaintenanceReports(propertyId, filters) owner; getMyMaintenanceReports tenant; createMaintenanceReport(ctx, input); updateMaintenanceReport (owner); updateMyMaintenanceReport (tenant content-only). No delete: FR-110..112 never grant it.
 - Lifecycle: forward-only via isAllowedTransition; resolved_at DB-authoritative, never client-set.
+
+## Maintenance photos (Slice 6, two-step D9)
+- uploadMaintenanceReportPhoto(reportId, file): validate -> read report -> upload upsert:false -> attach PATH.
+- attachMaintenanceReportPhoto(reportId, objectPath): image_url only. getMaintenanceReportPhotoUrl(path, ttl=3600s).
+- Upload failure never touches image_url.

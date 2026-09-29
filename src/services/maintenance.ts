@@ -1,6 +1,12 @@
 import { supabase } from '@/lib/supabase';
 import type { MaintenanceReport, MaintenanceStatus } from '@/types/database';
 import type { MaintenanceCreateInput, MaintenanceOwnerUpdateInput } from '@/schemas/maintenance';
+import {
+  MAINTENANCE_BUCKET,
+  buildMaintenancePhotoPath,
+  isStorableImagePath,
+  validateMaintenancePhoto,
+} from '@/lib/maintenancePhoto';
 
 export interface MaintenanceFilters {
   status?: MaintenanceStatus | 'all';
@@ -100,4 +106,84 @@ export async function updateMyMaintenanceReport(
     .single();
   if (error) throw error;
   return data as MaintenanceReport;
+}
+
+// ---------------------------------------------------------------------------
+// Slice 6: two-step photo flow (D9). image_url stores the STORAGE OBJECT
+// PATH, never a signed URL. Signed URLs are minted only for display.
+// ---------------------------------------------------------------------------
+
+export const MAINTENANCE_PHOTO_URL_TTL_SECONDS = 3600; // 1h (AS-031)
+
+export { MAINTENANCE_BUCKET };
+
+// Trusted context resolved from the report row itself (not caller input):
+// upload(reportId, file) reads the report, builds the exact path from its
+// property_id/tenant_id/id, uploads with upsert:false, then attaches.
+export async function uploadMaintenanceReportPhoto(reportId: string, file: File): Promise<string> {
+  const check = validateMaintenancePhoto(file);
+  if (!check.ok) throw new Error(check.error ?? 'Foto tidak valid.');
+  const report = await getMaintenanceReport(reportId);
+  if (!report) throw new Error('Laporan tidak ditemukan.');
+  const objectPath = buildMaintenancePhotoPath(
+    { propertyId: report.property_id, tenantId: report.tenant_id, reportId: report.id },
+    file.name,
+  );
+  const { error } = await supabase.storage
+    .from(MAINTENANCE_BUCKET)
+    .upload(objectPath, file, { upsert: false, contentType: file.type });
+  if (error) throw new Error(mapStorageError(error.message));
+  await attachMaintenanceReportPhoto(reportId, objectPath);
+  return objectPath;
+}
+
+// Narrow attach: ONLY image_url may change here. The dedicated surface
+// avoids exposing the generic update path to tenant code.
+export async function attachMaintenanceReportPhoto(
+  reportId: string,
+  objectPath: string,
+): Promise<MaintenanceReport> {
+  if (!isStorableImagePath(objectPath)) throw new Error('Path foto tidak valid.');
+  const { data, error } = await supabase
+    .from('maintenance_reports')
+    .update({ image_url: objectPath })
+    .eq('id', reportId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data as MaintenanceReport;
+}
+
+// Display-only: mint a short-lived signed URL from the stored object path.
+export async function getMaintenanceReportPhotoUrl(
+  objectPath: string | null,
+  expiresIn = MAINTENANCE_PHOTO_URL_TTL_SECONDS,
+): Promise<string | null> {
+  if (!objectPath) return null;
+  if (!isStorableImagePath(objectPath)) throw new Error('Path foto tidak valid.');
+  const { data, error } = await supabase.storage
+    .from(MAINTENANCE_BUCKET)
+    .createSignedUrl(objectPath, expiresIn);
+  if (error) throw new Error(mapStorageError(error.message));
+  return data.signedUrl;
+}
+
+function mapStorageError(message: string): string {
+  const m = message.toLowerCase();
+  if (m.includes('exceeded') || m.includes('too large') || m.includes('max')) {
+    return 'Ukuran foto melebihi 5 MB.';
+  }
+  if (m.includes('mime') || m.includes('type') || m.includes('format')) {
+    return 'Tipe file tidak didukung. Gunakan JPG, PNG, atau WebP.';
+  }
+  if (m.includes('not found') || m.includes('does not exist')) {
+    return 'Laporan atau foto tidak ditemukan.';
+  }
+  if (m.includes('permission') || m.includes('denied') || m.includes('unauthorized') || m.includes('forbidden')) {
+    return 'Akses ditolak. Anda tidak berhak atas foto ini.';
+  }
+  if (m.includes('duplicate') || m.includes('already exists')) {
+    return 'Foto sudah ada. Muat ulang dan coba lagi.';
+  }
+  return 'Unggah foto gagal. Coba lagi.';
 }
