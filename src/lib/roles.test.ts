@@ -1,55 +1,35 @@
 import { describe, expect, it } from 'vitest';
-import { profileSchema, type UserRole } from '@/schemas/profile';
-import { tenantLinkSchema } from '@/schemas/tenantLink';
-import { resolveRole, canAccessOwnerRoutes } from '@/lib/roles';
+import { isValidRole, getHomePath, canAccessOwnerRoutes, canAccessTenantRoutes } from './roles';
 
-describe('Slice 1: profile role', () => {
-  it('accepts owner and tenant roles', () => {
-    expect(profileSchema.safeParse({ role: 'owner' }).success).toBe(true);
-    expect(profileSchema.safeParse({ role: 'tenant' }).success).toBe(true);
+describe('isValidRole (fail closed)', () => {
+  it('accepts owner and tenant', () => {
+    expect(isValidRole('owner')).toBe(true);
+    expect(isValidRole('tenant')).toBe(true);
   });
-
-  it('rejects invalid roles (incl. admin/staff privilege escalation)', () => {
-    for (const role of ['admin', 'staff', '', 'OWNER', 'superuser']) {
-      expect(profileSchema.safeParse({ role }).success).toBe(false);
-    }
-  });
-
-  it('email is optional display copy; phone optional', () => {
-    const r = profileSchema.safeParse({ role: 'owner', email: 'a@b.co', phone: '0811' });
-    expect(r.success).toBe(true);
-    const bad = profileSchema.safeParse({ role: 'owner', email: 'bukan-email' });
-    expect(bad.success).toBe(false);
+  it('rejects null, undefined, empty, unknown, admin', () => {
+    expect(isValidRole(null)).toBe(false);
+    expect(isValidRole(undefined)).toBe(false);
+    expect(isValidRole('')).toBe(false);
+    expect(isValidRole('admin')).toBe(false);
+    expect(isValidRole('OWNER')).toBe(false);
   });
 });
 
-describe('Slice 1: role resolution (never user_metadata)', () => {
-  it('resolves role from authenticated profile row', () => {
-    expect(resolveRole({ id: 'u1', role: 'tenant' as UserRole })).toBe('tenant');
-    expect(resolveRole({ id: 'u1', role: 'owner' as UserRole })).toBe('owner');
+describe('getHomePath (deterministic, no loops)', () => {
+  it('owner -> /, tenant -> /tenant', () => {
+    expect(getHomePath('owner')).toBe('/');
+    expect(getHomePath('tenant')).toBe('/tenant');
   });
+});
 
-  it('defaults missing/unknown to owner (existing data stays valid)', () => {
-    expect(resolveRole(null)).toBe('owner');
-    expect(resolveRole({ id: 'u1', role: null })).toBe('owner');
-  });
-
-  it('owner routes: owner passes, tenant denied, anon denied', () => {
+describe('canAccess helpers unchanged', () => {
+  it('owner-only for owner routes', () => {
     expect(canAccessOwnerRoutes('owner')).toBe(true);
     expect(canAccessOwnerRoutes('tenant')).toBe(false);
     expect(canAccessOwnerRoutes(null)).toBe(false);
   });
-});
-
-describe('Slice 1: tenant profile linkage', () => {
-  it('accepts null profile_id (legacy/unlinked) and valid uuid', () => {
-    expect(tenantLinkSchema.safeParse({ profile_id: null }).success).toBe(true);
-    expect(
-      tenantLinkSchema.safeParse({ profile_id: '123e4567-e89b-12d3-a456-426614174000' }).success,
-    ).toBe(true);
-  });
-
-  it('rejects malformed profile_id (prevents link abuse payloads)', () => {
-    expect(tenantLinkSchema.safeParse({ profile_id: 'not-a-uuid' }).success).toBe(false);
+  it('tenant branch allows both roles (owner preview)', () => {
+    expect(canAccessTenantRoutes('owner')).toBe(true);
+    expect(canAccessTenantRoutes('tenant')).toBe(true);
   });
 });

@@ -18,3 +18,16 @@ export function canAccessOwnerRoutes(role: UserRole | null | undefined): boolean
 export function canAccessTenantRoutes(role: UserRole | null | undefined): boolean {
   return role === 'owner' || role === 'tenant';
 }
+
+// Runtime role check for untrusted values (e.g. profile row from DB).
+// Unknown values fail closed: never grant owner access.
+export function isValidRole(value: unknown): value is UserRole {
+  return value === 'owner' || value === 'tenant';
+}
+
+// Deterministic home per role. Used for cross-role redirects.
+// owner -> '/', tenant -> '/tenant'. No loops: target is always
+// a route the role is allowed to open.
+export function getHomePath(role: UserRole): string {
+  return role === 'tenant' ? '/tenant' : '/';
+}

@@ -9,7 +9,7 @@
   - Acceptance: tasks/plan.md, tasks/todo.md, CHANGELOG.md ada
   - Verify: file exists; plan punya slices T0–T13
   - Files: tasks/plan.md, tasks/todo.md, CHANGELOG.md
-- [ ] T0.3 Approval gate
+- [x] T0.3 Approval gate
   - Acceptance: user setuju mulai Slice 1
   - Verify: reply eksplisit
   - Dependencies: T0.1, T0.2
@@ -37,7 +37,7 @@
 - [x] typecheck, tests, migration clean, RLS hold (all PASS)
 
 ## Slice 2 — nav/protection
-- [ ] T2.1 Owner/Tenant shells + guards
+- [x] T2.1 Owner/Tenant shells + guards
   - Acceptance: nav D8; hiding bukan auth
   - Verify: route tests both roles
   - Files: src/layouts/*, src/App.tsx

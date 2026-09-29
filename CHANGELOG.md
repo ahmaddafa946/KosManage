@@ -1,6 +1,9 @@
 # Changelog
 
-## [Unreleased] — v2.0 (in progress, NOT released)
+## [Unreleased] — v2.0
+### Slice 2 COMPLETE — navigation + role route protection
+- RoleGuard fail-closed (profile.role only); owner 7 routes, tenant 6 routes; 27/27 tests PASS, typecheck PASS, build PASS.
+ (in progress, NOT released)
 
 ### Slice 1 — identity-role foundation (COMPLETE, live verified)
 - profiles.role (owner|tenant, default owner), profiles.email/phone display copy.

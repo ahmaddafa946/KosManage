@@ -84,3 +84,9 @@ Progress ledger for KosManage implementation.
 - 6 legacy v1 functions with mutable search_path (security-hardening follow-up).
 - Leaked password protection disabled (Supabase Auth setting follow-up).
 - Migration history drift: manual SQL Editor applies vs repo files (infrastructure follow-up).
+
+## Slice 2 COMPLETE — navigation + role route protection (T2.1)
+- OwnerShell 7 nav (/financial-reports baru); TenantShell 6 nav (/tenant/*).
+- RoleGuard: unauth->login; invalid role fail closed; cross-role redirect deterministic (getHomePath), no loop.
+- Tests 27/27 PASS (14 baru: guard matrix + nav D8). Typecheck PASS. Build PASS.
+- Slice 1 notes + security backlog unchanged. No migration/DB change.

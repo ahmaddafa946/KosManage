@@ -1,9 +1,9 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import {
-  LayoutDashboard, BedDouble, Users, Wallet, BarChart3, Settings,
   ChevronsLeft, ChevronsRight, LogOut, Building2,
 } from 'lucide-react';
+import { OWNER_NAV } from '@/lib/nav';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useProperty } from '@/hooks/useProperty';
@@ -14,16 +14,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const NAV = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-  { to: '/rooms', label: 'Kamar', icon: BedDouble, end: false },
-  { to: '/tenants', label: 'Penghuni', icon: Users, end: false },
-  { to: '/payments', label: 'Pembayaran', icon: Wallet, end: false },
-  { to: '/reports', label: 'Laporan', icon: BarChart3, end: false },
-  { to: '/settings', label: 'Pengaturan', icon: Settings, end: false },
-];
 
-export default function AppShell() {
+export default function OwnerShell() {
   const [collapsed, setCollapsed] = useState(false);
   const { user, signOut } = useAuth();
   const { property, loading } = useProperty();
@@ -42,7 +34,7 @@ export default function AppShell() {
           {!collapsed && <span className="truncate text-sm font-semibold">KosManage</span>}
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-2" aria-label="Navigasi utama">
-          {NAV.map((item) => (
+          {OWNER_NAV.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
