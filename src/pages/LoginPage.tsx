@@ -61,7 +61,7 @@ export default function LoginPage() {
         />
         <CardHeader className="space-y-5 p-7 pb-5 sm:p-8 sm:pb-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-white/80">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 ring-1 ring-white/80 dark:ring-white/10">
               <Building2 className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
             <div>
@@ -119,7 +119,7 @@ export default function LoginPage() {
               {busy ? 'Memproses...' : 'Masuk'}
             </Button>
 
-            <div className="flex items-start gap-2 rounded-xl border border-white/60 bg-white/35 px-3 py-2.5 text-xs leading-5 text-muted-foreground backdrop-blur-xl">
+            <div className="flex items-start gap-2 rounded-xl border border-white/60 bg-white/35 px-3 py-2.5 dark:border-white/10 dark:bg-white/5 text-xs leading-5 text-muted-foreground backdrop-blur-xl">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
               <span>Sesi login dilindungi oleh autentikasi Supabase.</span>
             </div>
