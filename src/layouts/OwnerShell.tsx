@@ -66,7 +66,7 @@ export default function OwnerShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="glass-surface sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between border-x-0 border-t-0 px-3 sm:h-16 sm:px-6">
+        <header className="glass-surface sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-x-0 border-t-0 px-3 sm:h-16 sm:px-6">
           <div className="min-w-0">
             {loading ? (
               <Skeleton className="h-5 w-40" />
