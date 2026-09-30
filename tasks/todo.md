@@ -88,7 +88,10 @@
   - Files: src/schemas/profile.ts, src/services/profile.ts, src/services/profile.test.ts, src/pages/tenant/TenantProfilePage.tsx, src/pages/tenant/TenantProfilePage.test.tsx, src/features/auth/AuthContext.tsx
 
 ## Slice 11 — reports
-- [ ] T11.1 split Laporan/Laporan Keuangan/Laporan Saya/Riwayat
+- [x] T11.1 split Laporan/Laporan Keuangan/Laporan Saya/Riwayat
+  - Acceptance: owner Laporan = operational/maintenance; owner Laporan Keuangan = financial; tenant Laporan Saya = maintenance; tenant Riwayat = payment/rental
+  - Verify: page tests + typecheck/build
+  - Files: src/pages/ReportsPage.tsx, src/pages/FinancialReportsPage.tsx, src/pages/tenant/TenantReportsPage.tsx, src/pages/tenant/TenantHistoryPage.tsx, src/services/tenantHistory.ts
 
 ## Slice 12/13 — final
 - [ ] T12.1 security + code review + simplification

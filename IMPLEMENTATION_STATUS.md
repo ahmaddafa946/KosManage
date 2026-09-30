@@ -127,7 +127,7 @@ Progress ledger for KosManage implementation.
 ## Slice 9 — tenant dashboard (T9.1 COMPLETE, no migration)
 - Halo {nama}, kamar + rent_price, masa sewa countdown (via src/lib/rental.ts), tagihan aktif terdekat (overdue dulu) + [Bayar Sekarang] link -> /tenant/payments, Laporan Saya ringkasan -> /tenant/reports.
 - Read-only; RLS tenants_select_own_link; empty states informatif.
-- Tests 115/115 local. Typecheck PASS. Build PASS.
+- Tests 119/119 local. Typecheck PASS. Build PASS.
 
 
 ## Slice 10 — tenant profile self-edit (T10.1 implementation)
@@ -135,3 +135,12 @@ Progress ledger for KosManage implementation.
 - TenantProfilePage now loads the authenticated profile, edits name/phone, shows login email read-only, and refreshes the shared profile context after save.
 - No database migration; existing profiles RLS (id = auth.uid()) remains the authorization boundary.
 - Tests added for schema, service, and UI behavior; local typecheck/test/build verification should be run after pulling this commit.
+
+
+## Slice 11 — reports split (T11.1 implementation)
+- Owner Laporan is operational: occupancy + maintenance report monitoring/status updates; financial numbers removed from this page.
+- Owner Laporan Keuangan is financial-only: period filter, total due/received/outstanding, and period detail.
+- Tenant Laporan Saya now lists own maintenance reports and can create a report with optional validated photo upload.
+- Tenant Riwayat now shows paid payment history and rental history for the authenticated tenant profile.
+- No database migration; existing RLS boundaries are reused.
+- Local typecheck/test/build verification should be run after pulling this commit.

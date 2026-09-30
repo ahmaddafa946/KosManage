@@ -1,123 +1,204 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { BarChart3, Wrench } from 'lucide-react';
 import { useProperty } from '@/hooks/useProperty';
-import { getRevenueReport, periodRange } from '@/services/dashboard';
 import { getRooms } from '@/services/rooms';
+import { getMaintenanceReports, updateMaintenanceReport } from '@/services/maintenance';
 import { mapSupabaseError } from '@/lib/errors';
-import { formatRupiah } from '@/lib/utils';
-import type { Room } from '@/types/database';
+import type { MaintenanceReport, MaintenanceStatus, Room } from '@/types/database';
+import { MaintenanceStatusBadge } from '@/components/StatusBadge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatDate } from '@/lib/utils';
 
-type RangeKey = 'this_month' | 'last_month' | 'last_3' | 'last_6';
+const STATUS_OPTIONS: { value: MaintenanceStatus | 'all'; label: string }[] = [
+  { value: 'all', label: 'Semua status' },
+  { value: 'submitted', label: 'Diajukan' },
+  { value: 'in_progress', label: 'Sedang Diproses' },
+  { value: 'resolved', label: 'Selesai' },
+  { value: 'closed', label: 'Ditutup' },
+];
+
+const CATEGORY_LABEL: Record<MaintenanceReport['category'], string> = {
+  AC: 'AC',
+  electrical: 'Listrik',
+  plumbing: 'Plumbing',
+  furniture: 'Furnitur',
+  internet: 'Internet',
+  other: 'Lainnya',
+};
+
+const PRIORITY_LABEL: Record<MaintenanceReport['priority'], string> = {
+  low: 'Rendah',
+  medium: 'Sedang',
+  high: 'Tinggi',
+};
 
 export default function ReportsPage() {
   const { property, loading: propLoading } = useProperty();
-  const [range, setRange] = useState<RangeKey>('last_6');
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [revenue, setRevenue] = useState<{ period: string; due: number; paid: number; outstanding: number }[]>([]);
+  const [reports, setReports] = useState<MaintenanceReport[]>([]);
+  const [status, setStatus] = useState<MaintenanceStatus | 'all'>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  async function load() {
+    if (!property) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const [roomRows, reportRows] = await Promise.all([
+        getRooms(property.id),
+        getMaintenanceReports(property.id),
+      ]);
+      setRooms(roomRows);
+      setReports(reportRows);
+    } catch (err) {
+      setError(mapSupabaseError(err));
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function load() {
-      if (!property) return;
-      setLoading(true);
-      try {
-        const months = periodRange(range);
-        const [roomRows, rev] = await Promise.all([
-          getRooms(property.id),
-          getRevenueReport(property.id, months),
-        ]);
-        setRooms(roomRows);
-        setRevenue(rev);
-        setError(null);
-      } catch (e) {
-        setError(mapSupabaseError(e));
-      } finally {
-        setLoading(false);
-      }
-    }
     if (!propLoading && property) void load();
-  }, [propLoading, property, range]);
+  }, [propLoading, property?.id]);
 
-  const total = rooms.length;
-  const occupied = rooms.filter((r) => r.status === 'occupied').length;
-  const available = rooms.filter((r) => r.status === 'available').length;
-  const maintenance = rooms.filter((r) => r.status === 'maintenance').length;
-  const occupancyRate = total > 0 ? Math.round((occupied / total) * 100) : 0;
-  const totalPaid = revenue.reduce((a, r) => a + r.paid, 0);
-  const totalDue = revenue.reduce((a, r) => a + r.due, 0);
-  const maxPaid = Math.max(1, ...revenue.map((r) => r.paid));
+  const visibleReports = useMemo(
+    () => (status === 'all' ? reports : reports.filter((report) => report.status === status)),
+    [reports, status],
+  );
+
+  const occupied = rooms.filter((room) => room.status === 'occupied').length;
+  const occupancy = rooms.length > 0 ? Math.round((occupied / rooms.length) * 100) : 0;
+  const activeReports = reports.filter((report) => report.status === 'submitted' || report.status === 'in_progress').length;
+  const inProgress = reports.filter((report) => report.status === 'in_progress').length;
+  const maintenanceRooms = rooms.filter((room) => room.status === 'maintenance').length;
+
+  function roomLabel(roomId: string | null): string {
+    if (!roomId) return 'Kamar -';
+    return rooms.find((room) => room.id === roomId)?.room_number ?? 'Kamar -';
+  }
+
+  async function handleStatusChange(report: MaintenanceReport, next: MaintenanceStatus) {
+    if (next === report.status) return;
+    setBusyId(report.id);
+    setError(null);
+    try {
+      const updated = await updateMaintenanceReport(report.id, { status: next });
+      setReports((current) => current.map((item) => item.id === updated.id ? updated : item));
+    } catch (err) {
+      setError(mapSupabaseError(err));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-4" aria-label="Memuat laporan operasional">
+        <Skeleton className="h-8 w-56" />
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+          <Skeleton className="h-24" />
+        </div>
+        <Skeleton className="h-56 w-full" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2">
-        <Select value={range} onValueChange={(v) => setRange(v as RangeKey)}>
-          <SelectTrigger className="w-48" aria-label="Filter periode"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="this_month">Bulan ini</SelectItem>
-            <SelectItem value="last_month">Bulan lalu</SelectItem>
-            <SelectItem value="last_3">3 bulan terakhir</SelectItem>
-            <SelectItem value="last_6">6 bulan terakhir</SelectItem>
-          </SelectContent>
-        </Select>
+    <div className="space-y-6">
+      <div>
+        <h1 className="flex items-center gap-2 text-xl font-semibold">
+          <BarChart3 className="h-5 w-5" />
+          Laporan Operasional
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Pantau okupansi dan kendala maintenance kos.
+        </p>
       </div>
 
-      {error && <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive" role="alert">{error}</div>}
-
-      {loading ? (
-        <div className="space-y-2"><Skeleton className="h-24 w-full" /><Skeleton className="h-48 w-full" /></div>
-      ) : (
-        <>
-          <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-            <Card><CardHeader className="pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Okupansi</CardTitle></CardHeader><CardContent><div className="text-xl font-bold">{occupancyRate}%</div><p className="text-xs text-muted-foreground">{occupied} dari {total} kamar terisi</p></CardContent></Card>
-            <Card><CardHeader className="pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Kosong</CardTitle></CardHeader><CardContent><div className="text-xl font-bold">{available}</div><p className="text-xs text-muted-foreground">Maintenance: {maintenance}</p></CardContent></Card>
-            <Card><CardHeader className="pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Total Tagihan (periode)</CardTitle></CardHeader><CardContent><div className="text-xl font-bold">{formatRupiah(totalDue)}</div></CardContent></Card>
-            <Card><CardHeader className="pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Total Diterima (periode)</CardTitle></CardHeader><CardContent><div className="text-xl font-bold">{formatRupiah(totalPaid)}</div></CardContent></Card>
-          </div>
-
-          <Card>
-            <CardHeader><CardTitle className="text-sm">Pendapatan per Periode</CardTitle></CardHeader>
-            <CardContent className="space-y-3">
-              {revenue.length === 0 && <p className="text-sm text-muted-foreground">Belum ada data pada periode ini.</p>}
-              {revenue.map((r) => (
-                <div key={r.period} className="space-y-1">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">{r.period}</span>
-                    <span className="text-muted-foreground">{formatRupiah(r.paid)} / {formatRupiah(r.due)}</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-muted" role="img" aria-label={`Pendapatan ${r.period}: ${formatRupiah(r.paid)}`}>
-                    <div className="h-full rounded-full bg-primary" style={{ width: `${Math.round((r.paid / maxPaid) * 100)}%` }} />
-                  </div>
-                  <p className="text-xs text-muted-foreground">Sisa: {formatRupiah(r.outstanding)}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader><CardTitle className="text-sm">Rincian Periode</CardTitle></CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader><TableRow><TableHead>Periode</TableHead><TableHead>Tagihan</TableHead><TableHead>Diterima</TableHead><TableHead>Sisa</TableHead></TableRow></TableHeader>
-                <TableBody>
-                  {revenue.map((r) => (
-                    <TableRow key={r.period}>
-                      <TableCell className="font-medium">{r.period}</TableCell>
-                      <TableCell>{formatRupiah(r.due)}</TableCell>
-                      <TableCell>{formatRupiah(r.paid)}</TableCell>
-                      <TableCell>{formatRupiah(r.outstanding)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </>
+      {error && (
+        <div role="alert" className="space-y-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+          <p>{error}</p>
+          <Button variant="outline" size="sm" onClick={() => void load()}>Coba lagi</Button>
+        </div>
       )}
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Okupansi</CardTitle></CardHeader>
+          <CardContent><div className="text-2xl font-bold">{occupancy}%</div><p className="text-xs text-muted-foreground">{occupied} dari {rooms.length} kamar terisi</p></CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Laporan Aktif</CardTitle></CardHeader>
+          <CardContent><div className="text-2xl font-bold">{activeReports}</div><p className="text-xs text-muted-foreground">Diajukan + sedang diproses</p></CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Sedang Diproses</CardTitle></CardHeader>
+          <CardContent><div className="text-2xl font-bold">{inProgress}</div><p className="text-xs text-muted-foreground">Membutuhkan tindak lanjut</p></CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2"><CardTitle className="text-xs font-medium text-muted-foreground">Maintenance Kamar</CardTitle></CardHeader>
+          <CardContent><div className="text-2xl font-bold">{maintenanceRooms}</div><p className="text-xs text-muted-foreground">Kamar berstatus maintenance</p></CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between gap-3">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-sm"><Wrench className="h-4 w-4" /> Laporan Maintenance</CardTitle>
+            <p className="mt-1 text-xs text-muted-foreground">Laporan tenant dan status penanganannya.</p>
+          </div>
+          <Select value={status} onValueChange={(value) => setStatus(value as MaintenanceStatus | 'all')}>
+            <SelectTrigger className="w-48" aria-label="Filter status laporan"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {visibleReports.length === 0 ? (
+            <div className="rounded-md border border-dashed p-8 text-center">
+              <p className="font-medium">{reports.length === 0 ? 'Belum ada laporan maintenance' : 'Tidak ada laporan pada filter ini'}</p>
+              <p className="mt-1 text-sm text-muted-foreground">Laporan kendala dari tenant akan muncul di sini.</p>
+            </div>
+          ) : (
+            visibleReports.slice(0, 10).map((report) => (
+              <div key={report.id} className="rounded-lg border p-4">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-medium">{report.title}</p>
+                      <MaintenanceStatusBadge status={report.status} />
+                    </div>
+                    <p className="text-sm text-muted-foreground">{roomLabel(report.room_id)} · {CATEGORY_LABEL[report.category]} · Prioritas {PRIORITY_LABEL[report.priority]}</p>
+                    <p className="text-sm">{report.description}</p>
+                    <p className="text-xs text-muted-foreground">Diajukan {formatDate(report.created_at)}</p>
+                  </div>
+                  <Select
+                    value={report.status}
+                    onValueChange={(value) => void handleStatusChange(report, value as MaintenanceStatus)}
+                    disabled={busyId === report.id}
+                  >
+                    <SelectTrigger className="w-44" aria-label={'Status ' + report.title}><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {STATUS_OPTIONS.filter((option) => option.value !== 'all').map((option) => (
+                        <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ))
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
-

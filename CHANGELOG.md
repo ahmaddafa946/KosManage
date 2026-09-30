@@ -1,6 +1,13 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 11 — reports split (no migration)
+- Owner Laporan sekarang fokus operasional/maintenance; owner Laporan Keuangan fokus tagihan, pembayaran diterima, dan tunggakan.
+- Tenant Laporan Saya menampilkan laporan maintenance sendiri dan form pengajuan dengan upload foto opsional.
+- Tenant Riwayat menampilkan pembayaran lunas dan riwayat masa sewa.
+- No migration; existing RLS and services are reused.
+
+
 ### Slice 10 — tenant self-edit profile (no migration)
 - FR-130: tenant dapat mengubah full_name dan phone miliknya sendiri melalui payload yang di-whitelist; role, id, dan ownership tidak tersedia untuk diedit.
 - Email login tampil read-only; perubahan email tidak dilakukan dari profil karena auth.users.email tetap menjadi sumber identitas.
