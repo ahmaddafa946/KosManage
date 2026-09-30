@@ -62,7 +62,7 @@ export default function TenantShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="glass-surface sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between border-x-0 border-t-0 px-3 sm:h-16 sm:px-6">
+        <header className="glass-surface sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-x-0 border-t-0 px-3 sm:h-16 sm:px-6">
           <div className="min-w-0">
             <h1 className="truncate text-sm font-semibold">Kos Saya</h1>
           </div>
@@ -93,7 +93,7 @@ export default function TenantShell() {
             end={item.end}
             className={({ isActive }) => cn(
               'flex min-w-[72px] flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[10px] font-medium transition-colors',
-              isActive ? 'bg-white/70 text-primary shadow-sm ring-1 ring-white/10' : 'text-muted-foreground dark:hover:bg-white/5'
+              isActive ? 'bg-white/70 text-primary shadow-sm ring-1 ring-white/70 dark:bg-white/10 dark:ring-white/10' : 'text-muted-foreground dark:hover:bg-white/5'
             )}
           >
             <item.icon className="h-4 w-4 shrink-0" />
