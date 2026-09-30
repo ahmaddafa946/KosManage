@@ -70,7 +70,7 @@ export default function DashboardPage() {
   if (loading || propLoading) {
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-24" />)}
         </div>
         <Skeleton className="h-48" />
@@ -106,7 +106,7 @@ export default function DashboardPage() {
               <k.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="truncate text-xl font-bold">{k.value}</div>
+              <div className="min-w-0 break-words text-lg font-bold sm:text-xl">{k.value}</div>
             </CardContent>
           </Card>
         ))}
@@ -121,7 +121,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
@@ -181,7 +181,7 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid min-w-0 gap-3 sm:gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader><CardTitle className="text-sm">Pembayaran Terbaru</CardTitle></CardHeader>
           <CardContent className="space-y-2">
