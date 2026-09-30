@@ -104,7 +104,7 @@ export default function FinancialReportsPage() {
           {revenue.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">Belum ada data keuangan pada periode ini.</div>
           ) : (
-            <Table>
+            <div className="w-full overflow-x-auto"><Table>
               <TableHeader><TableRow>
   <SortableTableHead active={sortKey === 'period'} direction={sortDirection} onSort={() => handleSort('period')}>Periode</SortableTableHead>
   <SortableTableHead active={sortKey === 'due'} direction={sortDirection} onSort={() => handleSort('due')}>Tagihan</SortableTableHead>
@@ -121,7 +121,7 @@ export default function FinancialReportsPage() {
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+            </Table></div>
           )}
         </CardContent>
       </Card>
