@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, Moon, Sun } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useProperty } from '@/hooks/useProperty';
 import { updateProperty } from '@/services/properties';
@@ -11,11 +11,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTheme } from '@/features/theme/ThemeContext';
 
 export default function SettingsPage() {
   const { user, signOut } = useAuth();
   const { property, loading, setProperty } = useProperty();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [msg, setMsg] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
@@ -58,6 +60,38 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl space-y-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Tampilan</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-medium">Mode gelap</p>
+            <p className="text-xs text-muted-foreground">
+              Gunakan tema gelap untuk tampilan yang lebih nyaman pada kondisi minim cahaya.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="shrink-0"
+            aria-pressed={theme === 'dark'}
+            onClick={toggleTheme}
+          >
+            {theme === 'dark' ? (
+              <>
+                <Sun className="h-4 w-4" aria-hidden="true" />
+                Mode terang
+              </>
+            ) : (
+              <>
+                <Moon className="h-4 w-4" aria-hidden="true" />
+                Mode gelap
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader><CardTitle className="text-sm">Profil Pemilik</CardTitle></CardHeader>
         <CardContent className="space-y-1 text-sm">
