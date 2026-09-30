@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Plus, Search, Pencil, Trash2 } from 'lucide-react';
 import { useProperty } from '@/hooks/useProperty';
 import { getRooms, createRoom, updateRoom, deleteRoom, type RoomFilters } from '@/services/rooms';
@@ -17,8 +17,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RoomStatusBadge } from '@/components/StatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { sortRows, type SortDirection } from '@/lib/sorting';
 
 const EMPTY: RoomInput = { room_number: '', floor: null, price: 0, status: 'available', notes: '' };
+type RoomSortKey = 'room_number' | 'floor' | 'price' | 'status' | 'facilities';
 
 export default function RoomsPage() {
   const { property, loading: propLoading } = useProperty();
@@ -38,6 +41,8 @@ export default function RoomsPage() {
   const [newFacilityName, setNewFacilityName] = useState('');
   const [addingFacility, setAddingFacility] = useState(false);
   const [roomFacilityNames, setRoomFacilityNames] = useState<Record<string, string>>({});
+  const [sortKey, setSortKey] = useState<RoomSortKey>('room_number');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const facilitiesCache = useRef<Facility[]>([]);
 
   async function load() {
@@ -76,6 +81,18 @@ export default function RoomsPage() {
     if (!propLoading && property) void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propLoading, property?.id]);
+
+  const sortedRooms = useMemo(() => sortRows(
+    rooms,
+    (room) => sortKey === 'facilities' ? (roomFacilityNames[room.id] ?? room.facilities) : room[sortKey],
+    sortDirection,
+    sortKey === 'room_number' ? 'natural' : sortKey === 'price' || sortKey === 'floor' ? 'number' : 'text',
+  ), [rooms, roomFacilityNames, sortKey, sortDirection]);
+
+  function handleSort(key: RoomSortKey) {
+    if (sortKey === key) setSortDirection((direction) => direction === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDirection('asc'); }
+  }
 
   function openCreate() {
     setEditing(null);
@@ -183,9 +200,16 @@ export default function RoomsPage() {
             </div>
           ) : (
             <Table>
-              <TableHeader><TableRow><TableHead>Nomor</TableHead><TableHead>Lantai</TableHead><TableHead>Harga</TableHead><TableHead>Status</TableHead><TableHead>Fasilitas</TableHead><TableHead className="text-right">Aksi</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow>
+  <SortableTableHead active={sortKey === 'room_number'} direction={sortDirection} onSort={() => handleSort('room_number')}>Nomor</SortableTableHead>
+  <SortableTableHead active={sortKey === 'floor'} direction={sortDirection} onSort={() => handleSort('floor')}>Lantai</SortableTableHead>
+  <SortableTableHead active={sortKey === 'price'} direction={sortDirection} onSort={() => handleSort('price')}>Harga</SortableTableHead>
+  <SortableTableHead active={sortKey === 'status'} direction={sortDirection} onSort={() => handleSort('status')}>Status</SortableTableHead>
+  <SortableTableHead active={sortKey === 'facilities'} direction={sortDirection} onSort={() => handleSort('facilities')}>Fasilitas</SortableTableHead>
+  <TableHead className="text-right">Aksi</TableHead>
+</TableRow></TableHeader>
               <TableBody>
-                {rooms.map((r) => (
+                {sortedRooms.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell className="font-medium">{r.room_number}</TableCell>
                     <TableCell>{r.floor ?? '-'}</TableCell>
