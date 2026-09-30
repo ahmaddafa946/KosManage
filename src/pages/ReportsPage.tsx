@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { BarChart3, Wrench } from 'lucide-react';
+import { ArrowDown, ArrowUp, BarChart3, Wrench } from 'lucide-react';
 import { useProperty } from '@/hooks/useProperty';
 import { getRooms } from '@/services/rooms';
 import { getMaintenanceReports, updateMaintenanceReport } from '@/services/maintenance';
@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDate } from '@/lib/utils';
+import { sortRows, type SortDirection } from '@/lib/sorting';
 
 const STATUS_OPTIONS: { value: MaintenanceStatus | 'all'; label: string }[] = [
   { value: 'all', label: 'Semua status' },
@@ -36,6 +37,8 @@ const NEXT_STATUS_OPTIONS: Record<MaintenanceStatus, MaintenanceStatus[]> = {
   closed: ['closed'],
 };
 
+type ReportSortKey = 'title' | 'room' | 'category' | 'priority' | 'status' | 'created_at';
+
 const PRIORITY_LABEL: Record<MaintenanceReport['priority'], string> = {
   low: 'Rendah',
   medium: 'Sedang',
@@ -54,6 +57,8 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<ReportSortKey>('created_at');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   async function load() {
     if (!property) return;
@@ -81,6 +86,27 @@ export default function ReportsPage() {
     () => (status === 'all' ? reports : reports.filter((report) => report.status === status)),
     [reports, status],
   );
+
+  const sortedVisibleReports = useMemo(() => sortRows(
+    visibleReports,
+    (report) => {
+      switch (sortKey) {
+        case 'title': return report.title;
+        case 'room': return roomLabel(report.room_id);
+        case 'category': return CATEGORY_LABEL[report.category];
+        case 'priority': return PRIORITY_LABEL[report.priority];
+        case 'status': return report.status;
+        case 'created_at': return report.created_at;
+      }
+    },
+    sortDirection,
+    sortKey === 'room' ? 'natural' : sortKey === 'created_at' ? 'date' : 'text',
+  ), [visibleReports, sortKey, sortDirection, rooms]);
+
+  function handleSort(key: ReportSortKey) {
+    if (sortKey === key) setSortDirection((direction) => direction === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDirection('asc'); }
+  }
 
   const occupied = rooms.filter((room) => room.status === 'occupied').length;
   const occupancy = rooms.length > 0 ? Math.round((occupied / rooms.length) * 100) : 0;
@@ -166,12 +192,28 @@ export default function ReportsPage() {
             <CardTitle className="flex items-center gap-2 text-sm"><Wrench className="h-4 w-4" /> Laporan Maintenance</CardTitle>
             <p className="mt-1 text-xs text-muted-foreground">Laporan tenant dan status penanganannya.</p>
           </div>
-          <Select value={status} onValueChange={(value) => setStatus(value as MaintenanceStatus | 'all')}>
-            <SelectTrigger className="w-48" aria-label="Filter status laporan"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {STATUS_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={status} onValueChange={(value) => setStatus(value as MaintenanceStatus | 'all')}>
+              <SelectTrigger className="w-48" aria-label="Filter status laporan"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {STATUS_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={sortKey} onValueChange={(value) => handleSort(value as ReportSortKey)}>
+              <SelectTrigger className="w-44" aria-label="Urutkan laporan"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="title">Judul</SelectItem>
+                <SelectItem value="room">Nomor kamar</SelectItem>
+                <SelectItem value="category">Kategori</SelectItem>
+                <SelectItem value="priority">Prioritas</SelectItem>
+                <SelectItem value="status">Status</SelectItem>
+                <SelectItem value="created_at">Tanggal dibuat</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="icon" onClick={() => setSortDirection((direction) => direction === 'asc' ? 'desc' : 'asc')} aria-label={sortDirection === 'asc' ? 'Urutkan menurun' : 'Urutkan menaik'}>
+              {sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
           {visibleReports.length === 0 ? (
