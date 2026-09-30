@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { useProperty } from '@/hooks/useProperty';
 import { getPayments, createPayment, updatePayment, deletePayment } from '@/services/payments';
@@ -16,6 +16,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PaymentStatusBadge } from '@/components/StatusBadge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { sortRows, type SortDirection } from '@/lib/sorting';
+
+type PaymentSortKey = 'tenant' | 'room' | 'billing_period' | 'due_date' | 'amount_due' | 'amount_paid' | 'status' | 'payment_method';
 
 const EMPTY: PaymentInput = { tenant_id: '', billing_period: new Date().toISOString().slice(0, 7), due_date: new Date().toISOString().slice(0, 10), amount_due: 0, amount_paid: 0, payment_date: '', payment_method: null, notes: '' };
 
@@ -34,6 +38,8 @@ export default function PaymentsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Payment | null>(null);
+  const [sortKey, setSortKey] = useState<PaymentSortKey>('due_date');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   async function load() {
     if (!property) return;
@@ -61,6 +67,29 @@ export default function PaymentsPage() {
     if (!propLoading && property) void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propLoading, property?.id]);
+
+  const sortedPayments = useMemo(() => sortRows(
+    payments,
+    (payment) => {
+      switch (sortKey) {
+        case 'tenant': return payment.tenant?.name;
+        case 'room': return payment.room?.room_number;
+        case 'billing_period': return payment.billing_period;
+        case 'due_date': return payment.due_date;
+        case 'amount_due': return Number(payment.amount_due);
+        case 'amount_paid': return Number(payment.amount_paid);
+        case 'status': return payment.status;
+        case 'payment_method': return payment.payment_method;
+      }
+    },
+    sortDirection,
+    ['amount_due', 'amount_paid'].includes(sortKey) ? 'number' : sortKey === 'due_date' ? 'date' : sortKey === 'room' ? 'natural' : 'text',
+  ), [payments, sortKey, sortDirection]);
+
+  function handleSort(key: PaymentSortKey) {
+    if (sortKey === key) setSortDirection((direction) => direction === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDirection('asc'); }
+  }
 
   function openCreate() {
     setEditing(null);
@@ -146,9 +175,19 @@ export default function PaymentsPage() {
             </div>
           ) : (
             <Table>
-              <TableHeader><TableRow><TableHead>Penghuni</TableHead><TableHead>Kamar</TableHead><TableHead>Periode</TableHead><TableHead>Jatuh Tempo</TableHead><TableHead>Tagihan</TableHead><TableHead>Dibayar</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Aksi</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow>
+  <SortableTableHead active={sortKey === 'tenant'} direction={sortDirection} onSort={() => handleSort('tenant')}>Penghuni</SortableTableHead>
+  <SortableTableHead active={sortKey === 'room'} direction={sortDirection} onSort={() => handleSort('room')}>Kamar</SortableTableHead>
+  <SortableTableHead active={sortKey === 'billing_period'} direction={sortDirection} onSort={() => handleSort('billing_period')}>Periode</SortableTableHead>
+  <SortableTableHead active={sortKey === 'due_date'} direction={sortDirection} onSort={() => handleSort('due_date')}>Jatuh Tempo</SortableTableHead>
+  <SortableTableHead active={sortKey === 'amount_due'} direction={sortDirection} onSort={() => handleSort('amount_due')}>Tagihan</SortableTableHead>
+  <SortableTableHead active={sortKey === 'amount_paid'} direction={sortDirection} onSort={() => handleSort('amount_paid')}>Dibayar</SortableTableHead>
+  <SortableTableHead active={sortKey === 'status'} direction={sortDirection} onSort={() => handleSort('status')}>Status</SortableTableHead>
+  <SortableTableHead active={sortKey === 'payment_method'} direction={sortDirection} onSort={() => handleSort('payment_method')}>Metode</SortableTableHead>
+  <TableHead className="text-right">Aksi</TableHead>
+</TableRow></TableHeader>
               <TableBody>
-                {payments.map((p) => (
+                {sortedPayments.map((p) => (
                   <TableRow key={p.id}>
                     <TableCell className="font-medium">{p.tenant?.name ?? '-'}</TableCell>
                     <TableCell>{p.room?.room_number ?? '-'}</TableCell>
@@ -157,6 +196,7 @@ export default function PaymentsPage() {
                     <TableCell>{formatRupiah(Number(p.amount_due))}</TableCell>
                     <TableCell>{formatRupiah(Number(p.amount_paid))}</TableCell>
                     <TableCell><PaymentStatusBadge status={p.status} /></TableCell>
+                    <TableCell>{p.payment_method ?? '-'}</TableCell>
                     <TableCell className="text-right">
                       <Button variant="ghost" size="sm" onClick={() => openEdit(p)} aria-label="Ubah pembayaran"><Pencil className="h-4 w-4" /></Button>
                       <Button variant="ghost" size="sm" onClick={() => setConfirmDelete(p)} aria-label="Hapus pembayaran"><Trash2 className="h-4 w-4 text-destructive" /></Button>
