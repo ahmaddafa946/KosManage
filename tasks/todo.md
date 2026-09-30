@@ -88,8 +88,6 @@
   - Files: src/schemas/profile.ts, src/services/profile.ts, src/services/profile.test.ts, src/pages/tenant/TenantProfilePage.tsx, src/pages/tenant/TenantProfilePage.test.tsx, src/features/auth/AuthContext.tsx
 
 ## Slice 11 — reports
-
-## Slice 11 — reports
 - [ ] T11.1 split Laporan/Laporan Keuangan/Laporan Saya/Riwayat
 
 ## Slice 12/13 — final
