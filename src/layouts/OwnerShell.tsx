@@ -42,7 +42,7 @@ export default function OwnerShell() {
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  isActive ? 'bg-white/60 text-primary shadow-sm ring-1 ring-white/70' : 'text-muted-foreground hover:bg-white/45 hover:text-foreground'
+                  isActive ? 'bg-white/60 text-primary shadow-sm ring-1 ring-white/70 dark:bg-white/10 dark:ring-white/10' : 'text-muted-foreground hover:bg-white/45 hover:text-foreground dark:hover:bg-white/5'
                 )
               }
               title={collapsed ? item.label : undefined}
@@ -101,7 +101,7 @@ export default function OwnerShell() {
             end={item.end}
             className={({ isActive }) => cn(
               'flex min-w-[72px] flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[10px] font-medium transition-colors',
-              isActive ? 'bg-white/70 text-primary shadow-sm ring-1 ring-white/70' : 'text-muted-foreground'
+              isActive ? 'bg-white/70 text-primary shadow-sm ring-1 ring-white/70 dark:bg-white/10 dark:ring-white/10' : 'text-muted-foreground dark:hover:bg-white/5'
             )}
           >
             <item.icon className="h-4 w-4 shrink-0" />
