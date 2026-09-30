@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Plus, Wrench } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowDown, ArrowUp, Plus, Wrench } from 'lucide-react';
 import { getMyTenantOccupancy } from '@/services/tenantDashboard';
 import {
   createMaintenanceReport,
@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDate } from '@/lib/utils';
+import { sortRows, type SortDirection } from '@/lib/sorting';
 
 const CATEGORIES: { value: MaintenanceCategory; label: string }[] = [
   { value: 'AC', label: 'AC' },
@@ -27,6 +28,8 @@ const CATEGORIES: { value: MaintenanceCategory; label: string }[] = [
   { value: 'internet', label: 'Internet' },
   { value: 'other', label: 'Lainnya' },
 ];
+
+type TenantReportSortKey = 'title' | 'category' | 'priority' | 'status' | 'created_at';
 
 const PRIORITIES: { value: MaintenancePriority; label: string }[] = [
   { value: 'low', label: 'Rendah' },
@@ -53,6 +56,8 @@ export default function TenantReportsPage() {
     file: null as File | null,
   });
   const [formError, setFormError] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<TenantReportSortKey>('created_at');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   async function load() {
     setLoading(true);
@@ -75,6 +80,26 @@ export default function TenantReportsPage() {
   }
 
   useEffect(() => { void load(); }, []);
+
+  const sortedReports = useMemo(() => sortRows(
+    reports,
+    (report) => {
+      switch (sortKey) {
+        case 'title': return report.title;
+        case 'category': return report.category;
+        case 'priority': return report.priority;
+        case 'status': return report.status;
+        case 'created_at': return report.created_at;
+      }
+    },
+    sortDirection,
+    sortKey === 'created_at' ? 'date' : 'text',
+  ), [reports, sortKey, sortDirection]);
+
+  function handleSort(key: TenantReportSortKey) {
+    if (sortKey === key) setSortDirection((direction) => direction === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDirection('asc'); }
+  }
 
   function resetForm() {
     setForm({
@@ -156,7 +181,22 @@ export default function TenantReportsPage() {
           <h1 className="flex items-center gap-2 text-xl font-semibold"><Wrench className="h-5 w-5" /> Laporan Saya</h1>
           <p className="mt-1 text-sm text-muted-foreground">Ajukan dan pantau laporan maintenance kamar Anda{roomNumber ? ' (' + roomNumber + ')' : ''}.</p>
         </div>
-        <Button onClick={() => { resetForm(); setDialogOpen(true); }} disabled={!propertyId || !tenantId}><Plus className="h-4 w-4" /> Buat Laporan</Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={sortKey} onValueChange={(value) => handleSort(value as TenantReportSortKey)}>
+            <SelectTrigger className="w-44" aria-label="Urutkan laporan"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="title">Judul</SelectItem>
+              <SelectItem value="category">Kategori</SelectItem>
+              <SelectItem value="priority">Prioritas</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
+              <SelectItem value="created_at">Tanggal dibuat</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="icon" onClick={() => setSortDirection((direction) => direction === 'asc' ? 'desc' : 'asc')} aria-label={sortDirection === 'asc' ? 'Urutkan menurun' : 'Urutkan menaik'}>
+            {sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
+          </Button>
+          <Button onClick={() => { resetForm(); setDialogOpen(true); }} disabled={!propertyId || !tenantId}><Plus className="h-4 w-4" /> Buat Laporan</Button>
+        </div>
       </div>
 
       {error && (
