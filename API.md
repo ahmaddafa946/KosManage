@@ -91,6 +91,7 @@ Do **not** send authoritative `status` from the client; ignore or omit and let t
 | `getOutstandingPayments` (v2.0) | Sorted overdue first, then earliest `due_date`; UI label `Pembayaran Perlu Ditindaklanjuti`; remaining = max(0, due - paid) display only |
 | `getMaintenanceDashboard` | `maintenance_reports` status submitted/in_progress: activeTotal, inProgress (only `in_progress`), recent 5 with room/tenant label; RLS owner |
 | `getUpcomingRentalExpiries` | Active tenants with `end_date` 0..30 Jakarta calendar days (via `src/lib/rental.ts`); past_due + open-ended excluded; never persisted |
+| `getMyTenantOccupancy` (v2.0) | Tenant self-read (`profile_id = auth.uid()`) + room join for tenant dashboard; read-only |
 
 Prefer few aggregated queries over many row fetches.
 

@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 9 COMPLETE — tenant dashboard (no migration)
+- FR-132: Halo {nama}, kamar Saya & harga/bulan, masa sewa countdown (via rental.ts), tagihan aktif terdekat + sisa + [Bayar Sekarang] -> /tenant/payments, Laporan Saya ringkasan aktif & in_progress + link -> /tenant/reports.
+- Informative empty states saat tanpa data sewa/tagihan/laporan. Read-only (tanpa mutasi langsung).
+- Tests 115/115 local, typecheck, build PASS.
+
 ### Slice 8 COMPLETE — owner dashboard expansion (no migration)
 - Existing KPI preserved (FR-010..013). Added Laporan Maintenance (aktif + sedang diproses + 5 terbaru), sewa berakhir 0–30 hari Jakarta via rental.ts, Pembayaran Perlu Ditindaklanjuti (overdue dulu).
 - Data nyata only; no fake trend. Tests 108/108 local, typecheck, build PASS.

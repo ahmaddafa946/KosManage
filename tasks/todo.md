@@ -78,7 +78,7 @@
 
 ## Slice 8/9 — dashboards
 - [x] T8.1 owner KPI expansion (data nyata)
-- [ ] T9.1 tenant dashboard + empty states
+- [x] T9.1 tenant dashboard + empty states
 
 ## Slice 10 — profile
 - [ ] T10.1 tenant self-edit guarded (block role/ids)

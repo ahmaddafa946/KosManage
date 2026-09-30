@@ -123,3 +123,8 @@ Progress ledger for KosManage implementation.
 ## Slice 8 — owner dashboard expansion (T8.1 COMPLETE, no migration)
 - KPI FR-010..013 preserved. Maintenance aktif/in_progress + recent 5. Upcoming rental expiry 0–30 Jakarta days via src/lib/rental.ts (past_due/open-ended excluded). Payments due renamed/sorted overdue-first.
 - No fake trends. No DB migration. Tests 108/108 local. Typecheck PASS. Build PASS.
+
+## Slice 9 — tenant dashboard (T9.1 COMPLETE, no migration)
+- Halo {nama}, kamar + rent_price, masa sewa countdown (via src/lib/rental.ts), tagihan aktif terdekat (overdue dulu) + [Bayar Sekarang] link -> /tenant/payments, Laporan Saya ringkasan -> /tenant/reports.
+- Read-only; RLS tenants_select_own_link; empty states informatif.
+- Tests 115/115 local. Typecheck PASS. Build PASS.
