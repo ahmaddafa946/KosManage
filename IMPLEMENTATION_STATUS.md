@@ -143,4 +143,15 @@ Progress ledger for KosManage implementation.
 - Tenant Laporan Saya now lists own maintenance reports and can create a report with optional validated photo upload.
 - Tenant Riwayat now shows paid payment history and rental history for the authenticated tenant profile.
 - No database migration; existing RLS boundaries are reused.
+- Local verification: Vitest 27 files / 139 tests PASS; typecheck PASS; production build PASS (Vite 1784 modules; chunk-size warning only).
+
+## Slice 12 — security + code review (T12.1 COMPLETE)
+- Reviewed Slice 10–11 code against requirements and SECURITY.md across correctness, readability, architecture, security, and performance.
+- No Critical/Required findings. RLS, tenant/owner isolation, private maintenance storage, profile self-edit allowlist, and maintenance lifecycle boundaries remain intact.
+- No schema/migration changes introduced.
+- Owner Laporan is operational: occupancy + maintenance report monitoring/status updates; financial numbers removed from this page.
+- Owner Laporan Keuangan is financial-only: period filter, total due/received/outstanding, and period detail.
+- Tenant Laporan Saya now lists own maintenance reports and can create a report with optional validated photo upload.
+- Tenant Riwayat now shows paid payment history and rental history for the authenticated tenant profile.
+- No database migration; existing RLS boundaries are reused.
 - Local typecheck/test/build verification should be run after pulling this commit.
