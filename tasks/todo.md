@@ -94,6 +94,8 @@
   - Files: src/pages/ReportsPage.tsx, src/pages/FinancialReportsPage.tsx, src/pages/tenant/TenantReportsPage.tsx, src/pages/tenant/TenantHistoryPage.tsx, src/services/tenantHistory.ts
 
 ## Slice 12/13 — final
-- [ ] T12.1 security + code review + simplification
+- [x] T12.1 security + code review + simplification
+  - Acceptance: review correctness/readability/architecture/security/performance; no Critical/Required findings.
+  - Verify: Slice 10/11 code + RLS/storage boundaries reviewed; no new dependency or secret introduced.
 - [ ] T13.1 full verify + bump v2.0 + changelog + status
   - Acceptance: typecheck/tests/build/lint; runtime matrix; versions sync; no secrets; no push
