@@ -98,4 +98,6 @@
   - Acceptance: review correctness/readability/architecture/security/performance; no Critical/Required findings.
   - Verify: Slice 10/11 code + RLS/storage boundaries reviewed; no new dependency or secret introduced.
 - [ ] T13.1 full verify + bump v2.0 + changelog + status
+  - Repo gate complete: versions synced, 139/139 tests PASS, typecheck PASS, build PASS, no secrets tracked.
+  - Remaining host-side gate: runtime matrix (owner/tenant critical flows) and lint command confirmation; Tauri binary build remains blocked by missing Rust/cargo on host.
   - Acceptance: typecheck/tests/build/lint; runtime matrix; versions sync; no secrets; no push
