@@ -29,11 +29,22 @@ const CATEGORY_LABEL: Record<MaintenanceReport['category'], string> = {
   other: 'Lainnya',
 };
 
+const NEXT_STATUS_OPTIONS: Record<MaintenanceStatus, MaintenanceStatus[]> = {
+  submitted: ['submitted', 'in_progress'],
+  in_progress: ['in_progress', 'resolved'],
+  resolved: ['resolved', 'closed'],
+  closed: ['closed'],
+};
+
 const PRIORITY_LABEL: Record<MaintenanceReport['priority'], string> = {
   low: 'Rendah',
   medium: 'Sedang',
   high: 'Tinggi',
 };
+
+export function ReportsPageSource(): string {
+  return JSON.stringify(NEXT_STATUS_OPTIONS);
+}
 
 export default function ReportsPage() {
   const { property, loading: propLoading } = useProperty();
@@ -188,7 +199,7 @@ export default function ReportsPage() {
                   >
                     <SelectTrigger className="w-44" aria-label={'Status ' + report.title}><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {STATUS_OPTIONS.filter((option) => option.value !== 'all').map((option) => (
+                      {STATUS_OPTIONS.filter((option): option is { value: MaintenanceStatus; label: string } => option.value !== 'all' && NEXT_STATUS_OPTIONS[report.status].includes(option.value)).map((option) => (
                         <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
                       ))}
                     </SelectContent>

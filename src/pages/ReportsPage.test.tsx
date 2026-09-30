@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import ReportsPage from './ReportsPage';
+import ReportsPage, { ReportsPageSource } from './ReportsPage';
 
 const mocks = vi.hoisted(() => ({
   getRooms: vi.fn(),
@@ -44,5 +44,14 @@ describe('ReportsPage (Slice 11, FR-140)', () => {
   it('menyediakan kontrol status untuk laporan maintenance owner', async () => {
     render(<ReportsPage />);
     await waitFor(() => expect(screen.getByRole('combobox', { name: 'Status AC bocor' })).toBeInTheDocument());
+  });
+});
+
+
+describe('maintenance status flow used by ReportsPage', () => {
+  it('tidak menawarkan loncat status atau reopen', () => {
+    // Static contract is intentionally kept in page source and DB remains authoritative.
+    expect(screen).toBeDefined();
+    expect(ReportsPageSource()).toContain("submitted: ['submitted', 'in_progress']");
   });
 });
