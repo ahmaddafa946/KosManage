@@ -63,9 +63,9 @@ Progress ledger for KosManage implementation.
 
 ---
 
-# v2.0 Plan Ledger (SSOT+plan stage — no code changed)
+# v2.0 Release Ledger
 
-- Baseline: produk v1.0; metadata package/Tauri/Cargo 0.1.0 legacy (sync di final v2.0, tanpa rilis perantara).
+- Release target: v2.0.0; application/Tauri/Cargo metadata synchronized.
 - Capability map: identity-role → owner-dashboard, tenant-dashboard → facilities, rental-period, maintenance-reports, payment-expansion, tenant-profile → reports; security-rls cross-cutting.
 - SSOT updated: PRD, REQUIREMENTS, ARCHITECTURE, DATABASE, API, UI-UX, SECURITY, TESTING, ASSUMPTIONS, DEVELOPMENT, README + CHANGELOG + tasks/plan.md + tasks/todo.md (stage ini).
 - Next: tunggu approval → Slice 1 identity-role (profiles.role/email/phone + tenants.profile_id + RLS fdn + tests).
@@ -78,7 +78,7 @@ Progress ledger for KosManage implementation.
 - Migrations: 20260327000000_identity_role_foundation.sql, 20260328000000_private_rls_helpers.sql, 20260329000000_harden_slice1_triggers.sql — all applied to live (aamizrsuxbaaiiafrile).
 - Verified live: profiles.role/email/phone, tenants.profile_id, active-per-profile unique index, owner RLS via private.is_property_owner, tenant RLS via private.is_own_tenant, public helper dropped, auth trigger intact, existing data intact.
 - Tests 21/21 PASS, typecheck PASS, vite build PASS.
-- v2.0 NOT released; product baseline remains v1.0.
+- v2.0 release metadata finalized; runtime smoke test remains the final host-side verification step.
 
 ### Backlog (do NOT fix in Slice 1)
 - 6 legacy v1 functions with mutable search_path (security-hardening follow-up).
