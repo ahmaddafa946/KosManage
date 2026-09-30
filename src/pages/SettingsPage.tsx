@@ -112,7 +112,7 @@ export default function SettingsPage() {
               <Input id="paddr" value={address} onChange={(e) => setAddress(e.target.value)} disabled={busy} />
             </div>
             {msg && (
-              <p role={msg.kind === 'err' ? 'alert' : 'status'} className={msg.kind === 'err' ? 'rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive' : 'rounded-md bg-green-50 px-3 py-2 text-sm text-green-700'}>
+              <p role={msg.kind === 'err' ? 'alert' : 'status'} className={msg.kind === 'err' ? 'rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive' : 'rounded-md bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-500/10 dark:text-green-300'}>
                 {msg.text}
               </p>
             )}
