@@ -18,6 +18,13 @@ export default function LoginPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  function handleUseDemoAccount() {
+    setEmail('owner@kosmanage.dev');
+    setPassword('KosManage!dev1');
+    setFieldErrors({});
+    setFormError(null);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
@@ -118,6 +125,19 @@ export default function LoginPage() {
               <LogIn className="h-4 w-4" aria-hidden="true" />
               {busy ? 'Memproses...' : 'Masuk'}
             </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="h-10 w-full rounded-xl"
+              onClick={handleUseDemoAccount}
+              disabled={busy}
+            >
+              Gunakan Akun Demo
+            </Button>
+            <p className="text-center text-xs text-muted-foreground">
+              Menggunakan akun demo: owner@kosmanage.dev
+            </p>
 
             <div className="flex items-start gap-2 rounded-xl border border-white/60 bg-white/35 px-3 py-2.5 dark:border-white/10 dark:bg-white/5 text-xs leading-5 text-muted-foreground backdrop-blur-xl">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
