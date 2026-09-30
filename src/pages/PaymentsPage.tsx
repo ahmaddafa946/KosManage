@@ -174,7 +174,7 @@ export default function PaymentsPage() {
               <Button className="mt-4" onClick={openCreate}><Plus className="h-4 w-4" /> Catat Pembayaran</Button>
             </div>
           ) : (
-            <Table>
+            <div className="w-full overflow-x-auto"><Table>
               <TableHeader><TableRow>
   <SortableTableHead active={sortKey === 'tenant'} direction={sortDirection} onSort={() => handleSort('tenant')}>Penghuni</SortableTableHead>
   <SortableTableHead active={sortKey === 'room'} direction={sortDirection} onSort={() => handleSort('room')}>Kamar</SortableTableHead>
@@ -204,7 +204,7 @@ export default function PaymentsPage() {
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+            </Table></div>
           )}
         </CardContent>
       </Card>
