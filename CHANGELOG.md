@@ -1,6 +1,10 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 12 — security + code review + simplification
+- Slice 10–11 reviewed across correctness, readability, architecture, security, and performance; no Critical/Required findings.
+- Current local verification: Vitest 139/139 PASS; typecheck PASS; production build PASS (Vite 1784 modules; chunk-size warning only).
+- No schema or migration changes in this review.
 ### Slice 11 — reports split (no migration)
 - Owner Laporan sekarang fokus operasional/maintenance; owner Laporan Keuangan fokus tagihan, pembayaran diterima, dan tunggakan.
 - Tenant Laporan Saya menampilkan laporan maintenance sendiri dan form pengajuan dengan upload foto opsional.
