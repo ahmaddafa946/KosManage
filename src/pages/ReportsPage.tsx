@@ -222,7 +222,7 @@ export default function ReportsPage() {
               <p className="mt-1 text-sm text-muted-foreground">Laporan kendala dari tenant akan muncul di sini.</p>
             </div>
           ) : (
-            visibleReports.slice(0, 10).map((report) => (
+            sortedVisibleReports.slice(0, 10).map((report) => (
               <div key={report.id} className="rounded-lg border p-4">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                   <div className="min-w-0 space-y-1">
