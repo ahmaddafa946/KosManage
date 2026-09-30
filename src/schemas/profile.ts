@@ -26,7 +26,7 @@ export type ProfileInput = z.infer<typeof profileSchema>;
 export const tenantProfileUpdateSchema = z.object({
   full_name: z.string().trim().min(1, 'Nama wajib diisi.').max(100, 'Nama maksimal 100 karakter.'),
   phone: z.string().trim().max(20, 'Nomor telepon maksimal 20 karakter.').nullable().optional()
-    .transform((value) => value ?? null),
+    .transform((value) => value ? value : null),
 }).strict();
 
 export type TenantProfileUpdateInput = z.infer<typeof tenantProfileUpdateSchema>;
