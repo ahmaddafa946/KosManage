@@ -199,7 +199,7 @@ export default function RoomsPage() {
               <Button className="mt-4" onClick={openCreate}><Plus className="h-4 w-4" /> Tambah Kamar</Button>
             </div>
           ) : (
-            <Table>
+            <div className="w-full overflow-x-auto"><Table>
               <TableHeader><TableRow>
   <SortableTableHead active={sortKey === 'room_number'} direction={sortDirection} onSort={() => handleSort('room_number')}>Nomor</SortableTableHead>
   <SortableTableHead active={sortKey === 'floor'} direction={sortDirection} onSort={() => handleSort('floor')}>Lantai</SortableTableHead>
@@ -223,7 +223,7 @@ export default function RoomsPage() {
                   </TableRow>
                 ))}
               </TableBody>
-            </Table>
+            </Table></div>
           )}
         </CardContent>
       </Card>
