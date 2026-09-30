@@ -1,6 +1,19 @@
 # Changelog
 
-## [Unreleased] — v2.0
+## [2.0.0] — 2026-09-30
+### Security
+- Slice 10–11 reviewed across correctness, readability, architecture, security, and performance; no Critical/Required findings.
+- Tenant/owner RLS boundaries, private maintenance storage, profile self-edit allowlist, and maintenance lifecycle protections retained.
+
+### Verified
+- Vitest 139/139 PASS; typecheck PASS; production build PASS.
+- Version metadata synchronized to 2.0.0 across package, Tauri, and Cargo.
+- Runtime smoke test is host-side and still pending.
+
+### Added
+- Owner/Tenant role-based navigation and route protection.
+- Rental countdown, maintenance reports + private photo storage, payment simulation, tenant dashboard/profile, and split operational/financial reporting.
+
 ### Slice 12 — security + code review + simplification
 - Slice 10–11 reviewed across correctness, readability, architecture, security, and performance; no Critical/Required findings.
 - Current local verification: Vitest 139/139 PASS; typecheck PASS; production build PASS (Vite 1784 modules; chunk-size warning only).
