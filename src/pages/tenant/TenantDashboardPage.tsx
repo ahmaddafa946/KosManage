@@ -18,6 +18,7 @@ import {
   type MyReportsSummary,
 } from '@/services/tenantDashboard';
 import { calculateDaysRemaining } from '@/lib/rental';
+import { mapSupabaseError } from '@/lib/errors';
 import { formatRupiah, formatDate } from '@/lib/utils';
 import type { Payment } from '@/types/database';
 
@@ -26,30 +27,32 @@ export default function TenantDashboardPage() {
   const navigate = useNavigate();
   const [occupancy, setOccupancy] = useState<TenantOccupancy | null>(null);
   const [bills, setBills] = useState<Payment[]>([]);
-  const [reportsSummary, setReportsSummary] = useState<MyReportsSummary>({ activeTotal: 0, inProgress: [] });
+  const [reportsSummary, setReportsSummary] = useState<MyReportsSummary>({ activeTotal: 0, inProgressCount: 0, recentActive: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
-      try {
-        const [occ, bList, rList] = await Promise.all([
-          getMyTenantOccupancy(),
-          getMyBills().catch(() => [] as Payment[]),
-          getMyMaintenanceReports().catch(() => []),
-        ]);
-        setOccupancy(occ);
-        setBills(bList);
-        setReportsSummary(summarizeMyReports(rList));
-        setError(null);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : 'Gagal memuat dashboard penyewa.');
-      } finally {
-        setLoading(false);
-      }
+  async function loadData() {
+    setLoading(true);
+    setError(null);
+    try {
+      // Critical queries: do not swallow errors into empty states
+      const [occ, bList, rList] = await Promise.all([
+        getMyTenantOccupancy(),
+        getMyBills(),
+        getMyMaintenanceReports(),
+      ]);
+      setOccupancy(occ);
+      setBills(bList);
+      setReportsSummary(summarizeMyReports(rList));
+    } catch (e) {
+      setError(mapSupabaseError(e));
+    } finally {
+      setLoading(false);
     }
-    void load();
+  }
+
+  useEffect(() => {
+    void loadData();
   }, []);
 
   if (loading) {
@@ -69,7 +72,7 @@ export default function TenantDashboardPage() {
     return (
       <div className="space-y-3">
         <p role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>Coba lagi</Button>
+        <Button variant="outline" onClick={() => void loadData()}>Coba lagi</Button>
       </div>
     );
   }
@@ -198,14 +201,14 @@ export default function TenantDashboardPage() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Sedang diproses</p>
-              <p className="text-xl font-bold">{reportsSummary.inProgress.length}</p>
+              <p className="text-xl font-bold">{reportsSummary.inProgressCount}</p>
             </div>
           </div>
 
-          {reportsSummary.inProgress.length > 0 ? (
+          {reportsSummary.recentActive.length > 0 ? (
             <div className="space-y-2 pt-2 border-t">
-              <p className="text-xs font-medium text-muted-foreground">Sedang Ditindaklanjuti:</p>
-              {reportsSummary.inProgress.map((r) => (
+              <p className="text-xs font-medium text-muted-foreground">Laporan Aktif Terbaru:</p>
+              {reportsSummary.recentActive.map((r) => (
                 <div key={r.id} className="flex items-center justify-between text-sm py-1 border-b last:border-b-0">
                   <div className="min-w-0 pr-2">
                     <p className="truncate font-medium">{r.title}</p>
@@ -215,13 +218,11 @@ export default function TenantDashboardPage() {
                 </div>
               ))}
             </div>
-          ) : reportsSummary.activeTotal === 0 ? (
+          ) : (
             <div className="py-2 text-sm text-muted-foreground">
               <p>Tidak ada laporan kendala aktif.</p>
               <p className="text-xs">Ada kerusakan kamar? <Link to="/tenant/reports" className="text-primary underline">Ajukan laporan baru</Link></p>
             </div>
-          ) : (
-            <p className="py-1 text-xs text-muted-foreground">Semua laporan aktif menunggu antrean pemeriksaan.</p>
           )}
         </CardContent>
       </Card>

@@ -9,7 +9,8 @@ export interface TenantOccupancy {
 
 export interface MyReportsSummary {
   activeTotal: number;
-  inProgress: MaintenanceReport[];
+  inProgressCount: number;
+  recentActive: MaintenanceReport[];
 }
 
 export function greetingName(name: string | null | undefined): string {
@@ -31,11 +32,11 @@ export function pickOutstandingBill<T extends { id: string; status: string; due_
 
 export function summarizeMyReports(reports: MaintenanceReport[]): MyReportsSummary {
   const active = reports.filter((r) => r.status === 'submitted' || r.status === 'in_progress');
-  const inProg = reports
-    .filter((r) => r.status === 'in_progress')
+  const inProgressCount = reports.filter((r) => r.status === 'in_progress').length;
+  const recentActive = [...active]
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .slice(0, 3);
-  return { activeTotal: active.length, inProgress: inProg };
+  return { activeTotal: active.length, inProgressCount, recentActive };
 }
 
 export function formatRentCountdown(daysRemaining: number | null): string {

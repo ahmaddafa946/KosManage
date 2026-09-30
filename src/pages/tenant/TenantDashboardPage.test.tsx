@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import TenantDashboardPage from './TenantDashboardPage';
 
@@ -43,10 +43,38 @@ describe('TenantDashboardPage (Slice 9, FR-132)', () => {
     expect(screen.getByText('Periode 2026-09')).toBeInTheDocument();
     expect(screen.getByText('Bayar Sekarang')).toBeInTheDocument();
     expect(screen.getByText('Laporan Saya')).toBeInTheDocument();
-    expect(screen.getByText('AC bocor')).toBeInTheDocument();
   });
 
-  it('empty states informatif + tidak mutasi langsung (kontrak read-only)', async () => {
+  it('tampilkan laporan aktif: submitted DAN in_progress (inkonsistensi Fixed)', async () => {
+    render(<MemoryRouter><TenantDashboardPage /></MemoryRouter>);
+    await waitFor(() => expect(screen.getByText('AC bocor')).toBeInTheDocument());
+    // Submitted yang sebelumnya disembunyikan (inkonsistensi) sekarang tampil
+    expect(screen.getByText('Lampu mati')).toBeInTheDocument();
+    expect(screen.getByText('Diajukan')).toBeInTheDocument();
+    expect(screen.getByText('Sedang Diproses')).toBeInTheDocument();
+  });
+
+  it('getMyBills rejection -> error state (tidak swallowed ke empty state)', async () => {
+    const pay = await import('@/services/payments');
+    vi.mocked(pay.getMyBills).mockRejectedValueOnce(new Error('network fail'));
+    render(<MemoryRouter><TenantDashboardPage /></MemoryRouter>);
+    await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
+    // Empty states tidak boleh tampil saat query gagal
+    expect(screen.queryByText(/Semua tagihan lunas/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tidak ada laporan kendala aktif/)).not.toBeInTheDocument();
+    expect(screen.getByText('Coba lagi')).toBeInTheDocument();
+  });
+
+  it('getMyMaintenanceReports rejection -> error state (tidak swallowed)', async () => {
+    const mnt = await import('@/services/maintenance');
+    vi.mocked(mnt.getMyMaintenanceReports).mockRejectedValueOnce(new Error('db fail'));
+    render(<MemoryRouter><TenantDashboardPage /></MemoryRouter>);
+    await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument());
+    expect(screen.queryByText(/Semua tagihan lunas/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Tidak ada laporan kendala aktif/)).not.toBeInTheDocument();
+  });
+
+  it('empty states tetap tampil saat query sukses & data kosong', async () => {
     const pay = await import('@/services/payments');
     const mnt = await import('@/services/maintenance');
     vi.mocked(pay.getMyBills).mockResolvedValueOnce([]);
@@ -57,5 +85,14 @@ describe('TenantDashboardPage (Slice 9, FR-132)', () => {
     // kontrak: dashboard TIDAK panggil startSimulatedPayment / update langsung
     expect('startSimulatedPayment' in pay).toBe(false);
     expect(JSON.stringify(Object.keys(mnt))).not.toMatch(/update|insert|delete/i);
+  });
+
+  it('retry action trigger reload', async () => {
+    const pay = await import('@/services/payments');
+    vi.mocked(pay.getMyBills).mockRejectedValueOnce(new Error('flaky'));
+    render(<MemoryRouter><TenantDashboardPage /></MemoryRouter>);
+    await waitFor(() => expect(screen.getByText('Coba lagi')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Coba lagi'));
+    await waitFor(() => expect(screen.getByText(/Halo, Ahmad/)).toBeInTheDocument());
   });
 });
