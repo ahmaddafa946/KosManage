@@ -82,6 +82,22 @@
   }
 }
 
+@media (max-width: 639px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
+  table {
+    min-width: 640px;
+  }
+
+  .mobile-safe-text {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
