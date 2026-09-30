@@ -210,7 +210,7 @@ export default function TenantReportsPage() {
       <div className="space-y-3">
         {reports.length === 0 ? (
           <Card><CardContent className="py-10 text-center"><p className="font-medium">Belum ada laporan</p><p className="mt-1 text-sm text-muted-foreground">Buat laporan jika ada kerusakan atau kendala di kamar.</p></CardContent></Card>
-        ) : reports.map((report) => (
+        ) : sortedReports.map((report) => (
           <Card key={report.id}>
             <CardContent className="space-y-2 py-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
