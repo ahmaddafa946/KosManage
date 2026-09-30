@@ -1,5 +1,12 @@
 # TESTING — KosManage
 
+## Current verification snapshot
+
+- Vitest: 27 test files / 139 tests — PASS
+- TypeScript typecheck — PASS
+- Vite production build — PASS
+- Tauri/Cargo and live E2E/RLS smoke tests require the host environment
+
 ## Goals
 
 Protect core business rules and the primary user flows without requiring an enterprise test matrix.
@@ -14,7 +21,7 @@ Protect core business rules and the primary user flows without requiring an ente
 | E2E / desktop | Playwright or Tauri-appropriate approach | Happy-path flows A–D |
 | Rust | `cargo test` | Native commands/utils when non-trivial |
 
-Until the app is bootstrapped, prioritize **SQL-level verification** of migrations (constraints, triggers, RLS) against a local Supabase instance.
+The application is bootstrapped and its automated suite currently covers unit/component behavior. SQL/RLS and runtime desktop checks remain environment-dependent verification layers.
 
 ## Unit tests
 
