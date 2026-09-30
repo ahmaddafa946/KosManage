@@ -43,6 +43,6 @@ describe('ReportsPage (Slice 11, FR-140)', () => {
 
   it('menyediakan kontrol status untuk laporan maintenance owner', async () => {
     render(<ReportsPage />);
-    await waitFor(() => expect(screen.getByDisplayValue('Sedang Diproses')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Status AC bocor' })).toBeInTheDocument());
   });
 });
