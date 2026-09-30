@@ -17,3 +17,16 @@ export const profileSchema = z.object({
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;
+
+/**
+ * Tenant self-edit contract.
+ * Deliberately excludes role, id, ownership, and payment fields.
+ * Empty phone is normalized to null.
+ */
+export const tenantProfileUpdateSchema = z.object({
+  full_name: z.string().trim().min(1, 'Nama wajib diisi.').max(100, 'Nama maksimal 100 karakter.'),
+  phone: z.string().trim().max(20, 'Nomor telepon maksimal 20 karakter.').nullable().optional()
+    .transform((value) => value ?? null),
+}).strict();
+
+export type TenantProfileUpdateInput = z.infer<typeof tenantProfileUpdateSchema>;

@@ -81,7 +81,13 @@
 - [x] T9.1 tenant dashboard + empty states
 
 ## Slice 10 — profile
-- [ ] T10.1 tenant self-edit guarded (block role/ids)
+- [x] T10.1 tenant self-edit guarded (block role/ids)
+  - Acceptance: tenant dapat mengubah full_name + phone miliknya sendiri; role/id/ownership tidak dapat diedit dari payload UI/service
+  - Email login read-only pada profile page; source of truth tetap Supabase Auth
+  - Verify: profile schema + service/page tests
+  - Files: src/schemas/profile.ts, src/services/profile.ts, src/services/profile.test.ts, src/pages/tenant/TenantProfilePage.tsx, src/pages/tenant/TenantProfilePage.test.tsx, src/features/auth/AuthContext.tsx
+
+## Slice 11 — reports
 
 ## Slice 11 — reports
 - [ ] T11.1 split Laporan/Laporan Keuangan/Laporan Saya/Riwayat

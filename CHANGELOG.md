@@ -1,6 +1,12 @@
 # Changelog
 
 ## [Unreleased] — v2.0
+### Slice 10 — tenant self-edit profile (no migration)
+- FR-130: tenant dapat mengubah full_name dan phone miliknya sendiri melalui payload yang di-whitelist; role, id, dan ownership tidak tersedia untuk diedit.
+- Email login tampil read-only; perubahan email tidak dilakukan dari profil karena auth.users.email tetap menjadi sumber identitas.
+- Ditambahkan getMyProfile / updateMyProfile, schema guarded, dan refresh profile context setelah save.
+- Verification: tests disiapkan; local typecheck/build/test harus dijalankan setelah pull.
+
 ### Slice 9 COMPLETE — tenant dashboard (no migration)
 - FR-132: Halo {nama}, kamar Saya & harga/bulan, masa sewa countdown (via rental.ts), tagihan aktif terdekat + sisa + [Bayar Sekarang] -> /tenant/payments, Laporan Saya ringkasan aktif & in_progress + link -> /tenant/reports.
 - Informative empty states saat tanpa data sewa/tagihan/laporan. Read-only (tanpa mutasi langsung).

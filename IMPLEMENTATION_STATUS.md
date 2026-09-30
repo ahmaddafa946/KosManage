@@ -128,3 +128,10 @@ Progress ledger for KosManage implementation.
 - Halo {nama}, kamar + rent_price, masa sewa countdown (via src/lib/rental.ts), tagihan aktif terdekat (overdue dulu) + [Bayar Sekarang] link -> /tenant/payments, Laporan Saya ringkasan -> /tenant/reports.
 - Read-only; RLS tenants_select_own_link; empty states informatif.
 - Tests 115/115 local. Typecheck PASS. Build PASS.
+
+
+## Slice 10 — tenant profile self-edit (T10.1 implementation)
+- Guarded tenant profile self-edit: only full_name and phone are accepted/written; role, id, ownership, and payment fields are excluded from the update payload.
+- TenantProfilePage now loads the authenticated profile, edits name/phone, shows login email read-only, and refreshes the shared profile context after save.
+- No database migration; existing profiles RLS (id = auth.uid()) remains the authorization boundary.
+- Tests added for schema, service, and UI behavior; local typecheck/test/build verification should be run after pulling this commit.

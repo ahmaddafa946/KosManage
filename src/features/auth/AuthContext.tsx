@@ -12,6 +12,7 @@ interface AuthState {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -49,6 +50,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  async function refreshProfile() {
+    const uid = user?.id;
+    if (!uid) {
+      setProfile(null);
+      return;
+    }
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', uid).maybeSingle();
+    if (error) throw error;
+    setProfile((data as Profile | null) ?? null);
+  }
+
   async function signIn(email: string, password: string) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
@@ -63,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const role = resolveRole(profile);
-  return <AuthContext.Provider value={{ user, session, profile, role, loading, signIn, signOut }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, session, profile, role, loading, signIn, signOut, refreshProfile }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth(): AuthState {
