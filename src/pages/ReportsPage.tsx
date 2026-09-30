@@ -42,8 +42,8 @@ const PRIORITY_LABEL: Record<MaintenanceReport['priority'], string> = {
   high: 'Tinggi',
 };
 
-export function ReportsPageSource(): string {
-  return JSON.stringify(NEXT_STATUS_OPTIONS);
+export function getNextMaintenanceStatuses(status: MaintenanceStatus): MaintenanceStatus[] {
+  return NEXT_STATUS_OPTIONS[status];
 }
 
 export default function ReportsPage() {
