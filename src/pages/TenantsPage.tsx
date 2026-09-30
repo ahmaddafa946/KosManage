@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Plus, Search, Pencil, UserX, Trash2 } from 'lucide-react';
 import { useProperty } from '@/hooks/useProperty';
 import { getTenants, createTenant, updateTenant, deactivateTenant, deleteTenant } from '@/services/tenants';
@@ -16,6 +16,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { sortRows, type SortDirection } from '@/lib/sorting';
+
+type TenantSortKey = 'name' | 'room' | 'phone' | 'start_date' | 'rent_price' | 'status';
 
 const EMPTY: TenantInput = { name: '', phone: '', email: '', identity_number: '', room_id: '', start_date: new Date().toISOString().slice(0, 10), end_date: '', rent_price: 0, deposit: null, status: 'active', notes: '' };
 
@@ -34,6 +38,8 @@ export default function TenantsPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Tenant | null>(null);
+  const [sortKey, setSortKey] = useState<TenantSortKey>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   async function load() {
     if (!property) return;
@@ -59,6 +65,18 @@ export default function TenantsPage() {
     if (!propLoading && property) void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propLoading, property?.id]);
+
+  const sortedTenants = useMemo(() => sortRows(
+    tenants,
+    (tenant) => sortKey === 'room' ? roomLabel(tenant.room_id) : tenant[sortKey],
+    sortDirection,
+    sortKey === 'rent_price' ? 'number' : sortKey === 'start_date' ? 'date' : sortKey === 'room' ? 'natural' : 'text',
+  ), [tenants, allRooms, sortKey, sortDirection]);
+
+  function handleSort(key: TenantSortKey) {
+    if (sortKey === key) setSortDirection((direction) => direction === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDirection('asc'); }
+  }
 
   function roomLabel(id: string | null): string {
     if (!id) return '-';
@@ -164,9 +182,17 @@ export default function TenantsPage() {
             </div>
           ) : (
             <Table>
-              <TableHeader><TableRow><TableHead>Nama</TableHead><TableHead>Kamar</TableHead><TableHead>Telepon</TableHead><TableHead>Mulai</TableHead><TableHead>Sewa</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Aksi</TableHead></TableRow></TableHeader>
+              <TableHeader><TableRow>
+  <SortableTableHead active={sortKey === 'name'} direction={sortDirection} onSort={() => handleSort('name')}>Nama</SortableTableHead>
+  <SortableTableHead active={sortKey === 'room'} direction={sortDirection} onSort={() => handleSort('room')}>Kamar</SortableTableHead>
+  <SortableTableHead active={sortKey === 'phone'} direction={sortDirection} onSort={() => handleSort('phone')}>Telepon</SortableTableHead>
+  <SortableTableHead active={sortKey === 'start_date'} direction={sortDirection} onSort={() => handleSort('start_date')}>Mulai</SortableTableHead>
+  <SortableTableHead active={sortKey === 'rent_price'} direction={sortDirection} onSort={() => handleSort('rent_price')}>Sewa</SortableTableHead>
+  <SortableTableHead active={sortKey === 'status'} direction={sortDirection} onSort={() => handleSort('status')}>Status</SortableTableHead>
+  <TableHead className="text-right">Aksi</TableHead>
+</TableRow></TableHeader>
               <TableBody>
-                {tenants.map((t) => (
+                {sortedTenants.map((t) => (
                   <TableRow key={t.id}>
                     <TableCell className="font-medium">{t.name}</TableCell>
                     <TableCell>{roomLabel(t.room_id)}</TableCell>
