@@ -34,7 +34,18 @@ export function sortRows<T>(
   return rows
     .map((row, index) => ({ row, index }))
     .sort((a, b) => {
-      const compared = compareSortValues(getValue(a.row), getValue(b.row), kind);
+      const left = getValue(a.row);
+      const right = getValue(b.row);
+      const leftEmpty = left == null || left === '';
+      const rightEmpty = right == null || right === '';
+
+      // Empty values always remain at the end, regardless of direction.
+      if (leftEmpty || rightEmpty) {
+        if (leftEmpty && rightEmpty) return a.index - b.index;
+        return leftEmpty ? 1 : -1;
+      }
+
+      const compared = compareSortValues(left, right, kind);
       return compared === 0 ? a.index - b.index : compared * multiplier;
     })
     .map(({ row }) => row);
