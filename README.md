@@ -2,23 +2,26 @@
 
 Modern desktop application for small-to-medium boarding house (kos) management.
 
-> **Phase status:** Documentation + Supabase schema foundation complete. Tauri/React application bootstrap is **not** started yet. See [DEVELOPMENT.md](DEVELOPMENT.md).
+> **Release status:** v2.0.0 application implementation complete. Unit/component tests and production web build pass; Tauri desktop binary verification remains host-dependent on Rust/Cargo.
 
-<!-- Screenshot placeholder: add app screenshot after UI bootstrap -->
+<!-- Screenshot: add a current app screenshot when visual assets are prepared. -->
 
-## Features (MVP)
+## Features
 
 - Authentication (email/password via Supabase Auth)
 - Dashboard (occupancy, income, arrears)
 - Room management
 - Tenant management
 - Payment tracking with computed statuses
-- Simple occupancy & revenue reports
+- Operational and financial reports
+- Tenant portal: dashboard, room, payments, maintenance reports, history, profile
 
 ## Architecture overview
 
 ```text
-React + TypeScript  ↔  Tauri (Rust)  ↔  Supabase (Auth + PostgreSQL + RLS)
+React + TypeScript  →  Supabase (Auth + PostgreSQL + Storage + RLS)
+                 │
+                 └→ Tauri (Rust) thin desktop shell
 ```
 
 Details: [ARCHITECTURE.md](ARCHITECTURE.md)
@@ -68,7 +71,7 @@ cp .env.example .env
 
 3. Fill `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (never commit real secrets).
 4. Apply database migrations (Supabase CLI), e.g. `supabase db reset` when configured.
-5. **After app bootstrap:** `npm install` then `npm run tauri dev`.
+5. Install dependencies with `npm ci`, then run `npm run tauri dev` for the desktop shell (Rust/Cargo required).
 
 ### Demo seed (local)
 
@@ -98,8 +101,8 @@ Documented in [DEVELOPMENT.md](DEVELOPMENT.md). App scripts become available aft
 ├── supabase/
 │   ├── migrations/     # versioned SQL
 │   └── seed.sql
-├── src/                # React app (bootstrap pending)
-└── src-tauri/          # Tauri/Rust (bootstrap pending)
+├── src/                # React application
+└── src-tauri/          # Tauri/Rust thin desktop shell
 ```
 
 ## Database
