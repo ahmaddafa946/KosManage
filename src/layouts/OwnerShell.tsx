@@ -27,13 +27,13 @@ export default function OwnerShell() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <aside className={cn('flex flex-col border-r bg-card transition-all', collapsed ? 'w-16' : 'w-60')}>
-        <div className="flex h-14 items-center gap-2 border-b px-4">
-          <Building2 className="h-5 w-5 shrink-0 text-primary" />
-          {!collapsed && <span className="truncate text-sm font-semibold">KosManage</span>}
+    <div className="flex h-screen overflow-hidden bg-background/40">
+      <aside className={cn('glass-surface z-10 flex flex-col border-r-0 transition-all', collapsed ? 'w-16' : 'w-60')}>
+        <div className="flex h-16 items-center gap-3 border-b border-white/50 px-4">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-white/70"><Building2 className="h-5 w-5 text-primary" /></span>
+          {!collapsed && <span className="truncate text-sm font-semibold tracking-tight">KosManage</span>}
         </div>
-        <nav className="flex-1 space-y-1 overflow-y-auto p-2" aria-label="Navigasi utama">
+        <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Navigasi utama">
           {OWNER_NAV.map((item) => (
             <NavLink
               key={item.to}
@@ -42,7 +42,7 @@ export default function OwnerShell() {
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                  isActive ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  isActive ? 'bg-white/60 text-primary shadow-sm ring-1 ring-white/70' : 'text-muted-foreground hover:bg-white/45 hover:text-foreground'
                 )
               }
               title={collapsed ? item.label : undefined}
@@ -52,7 +52,7 @@ export default function OwnerShell() {
             </NavLink>
           ))}
         </nav>
-        <div className="border-t p-2">
+        <div className="border-t border-white/50 p-3">
           <Button
             variant="ghost"
             size="sm"
@@ -66,7 +66,7 @@ export default function OwnerShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center justify-between border-b bg-card px-6">
+        <header className="glass-surface sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-x-0 border-t-0 px-6">
           <div className="min-w-0">
             {loading ? (
               <Skeleton className="h-5 w-40" />
@@ -89,7 +89,7 @@ export default function OwnerShell() {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="min-h-0 flex-1 overflow-y-auto p-6">
+        <main className="min-h-0 flex-1 overflow-y-auto p-6 lg:p-7">
           <Outlet />
         </main>
       </div>
