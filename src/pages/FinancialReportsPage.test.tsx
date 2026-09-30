@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { formatRupiah } from '@/lib/utils';
 import FinancialReportsPage from './FinancialReportsPage';
 
 const mockGetRevenueReport = vi.hoisted(() => vi.fn());
