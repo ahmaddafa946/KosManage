@@ -23,8 +23,8 @@ export default function TenantShell() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background/40">
-      <aside className={cn('glass-surface z-10 flex flex-col border-r-0 transition-all', collapsed ? 'w-16' : 'w-60')}>
+    <div className="flex min-h-screen overflow-hidden bg-background/40 md:h-screen">
+      <aside className={cn('glass-surface z-10 hidden flex-col border-r-0 transition-all md:flex', collapsed ? 'w-16' : 'w-60')}>
         <div className="flex h-16 items-center gap-3 border-b border-white/50 px-4">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-white/70"><Building2 className="h-5 w-5 text-primary" /></span>
           {!collapsed && <span className="truncate text-sm font-semibold tracking-tight">KosManage</span>}
@@ -62,14 +62,14 @@ export default function TenantShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="glass-surface sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-x-0 border-t-0 px-6">
+        <header className="glass-surface sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between border-x-0 border-t-0 px-3 sm:h-16 sm:px-6">
           <div className="min-w-0">
             <h1 className="truncate text-sm font-semibold">Kos Saya</h1>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" aria-label="Menu profil">
-                {user?.email ?? 'Akun'}
+              <Button variant="ghost" size="sm" className="max-w-[48%] justify-end" aria-label="Menu profil">
+                <span className="truncate">{user?.email ?? 'Akun'}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -81,10 +81,26 @@ export default function TenantShell() {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="min-h-0 flex-1 overflow-y-auto p-6 lg:p-7">
+        <main className="min-h-0 flex-1 overflow-y-auto p-3 pb-24 sm:p-5 sm:pb-24 lg:p-7 lg:pb-7">
           <Outlet />
         </main>
       </div>
+      <nav className="glass-surface fixed inset-x-2 bottom-2 z-50 flex gap-1 overflow-x-auto rounded-2xl p-1.5 md:hidden" aria-label="Navigasi mobile">
+        {TENANT_NAV.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.end}
+            className={({ isActive }) => cn(
+              'flex min-w-[72px] flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[10px] font-medium transition-colors',
+              isActive ? 'bg-white/70 text-primary shadow-sm ring-1 ring-white/70' : 'text-muted-foreground'
+            )}
+          >
+            <item.icon className="h-4 w-4 shrink-0" />
+            <span className="max-w-[84px] truncate">{item.label}</span>
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }
