@@ -29,8 +29,8 @@ export default function OwnerShell() {
   return (
     <div className="flex min-h-screen overflow-hidden bg-background/40 md:h-screen">
       <aside className={cn('glass-surface z-10 hidden flex-col border-r-0 transition-all md:flex', collapsed ? 'w-16' : 'w-60')}>
-        <div className="flex h-16 items-center gap-3 border-b border-white/50 px-4">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-white/70"><Building2 className="h-5 w-5 text-primary" /></span>
+        <div className="flex h-16 items-center gap-3 border-b border-white/50 px-4 dark:border-white/10">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-white/70 dark:ring-white/10"><Building2 className="h-5 w-5 text-primary" /></span>
           {!collapsed && <span className="truncate text-sm font-semibold tracking-tight">KosManage</span>}
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-3" aria-label="Navigasi utama">
@@ -52,7 +52,7 @@ export default function OwnerShell() {
             </NavLink>
           ))}
         </nav>
-        <div className="border-t border-white/50 p-3">
+        <div className="border-t border-white/50 p-3 dark:border-white/10">
           <Button
             variant="ghost"
             size="sm"
