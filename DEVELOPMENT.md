@@ -2,9 +2,9 @@
 
 ## Status of this phase
 
-Documentation + Supabase SQL foundation are in place. **Tauri/React application bootstrap is the next implementation phase** and is not completed in this repository state yet.
+The v2.0.0 Tauri/React application implementation is present. Supabase remains the cloud data plane; Tauri is the thin desktop shell.
 
-Commands below are the **intended** toolchain after bootstrap. Do not document commands that are unavailable; until `package.json` exists, only Supabase CLI/SQL workflows apply.
+Commands below are the current application toolchain. Rust/Cargo remains required for the native Tauri build.
 
 ## Requirements (target stack)
 
@@ -28,8 +28,8 @@ Windows 10/11 is the primary desktop target.
 ├── supabase/
 │   ├── migrations/
 │   └── seed.sql
-├── src/                 # placeholder (app bootstrap later)
-└── src-tauri/           # placeholder (Tauri bootstrap later)
+├── src/                 # React application
+└── src-tauri/           # Tauri/Rust desktop shell
 ```
 
 ## Environment
@@ -66,13 +66,13 @@ Demo seed credentials (local):
 
 See comments in `supabase/seed.sql`.
 
-## Installation (after app bootstrap)
+## Installation
 
 ```bash
 npm install
 ```
 
-## Development (after app bootstrap)
+## Development
 
 ```bash
 npm run tauri dev
