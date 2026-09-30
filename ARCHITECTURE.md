@@ -22,7 +22,7 @@ KosManage is a desktop application with a thin native shell and a cloud-backed d
                Auth  PostgreSQL Storage
 ```
 
-Storage is reserved for future use (AS-013). MVP uses Auth + PostgreSQL only.
+Storage is used by the maintenance-report photo flow through a private bucket with Storage RLS and signed URLs.
 
 ## Design principles
 
@@ -63,7 +63,7 @@ sequenceDiagram
   React-->>User: Success or friendly error
 ```
 
-## Frontend architecture (planned)
+## Frontend architecture
 
 ```text
 src/
