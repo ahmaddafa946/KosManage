@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
-    allowedHosts: ['encircle-cranium-candy.ngrok-free.dev'],
+    allowedHosts: true,
   },
   test: {
     globals: true,
