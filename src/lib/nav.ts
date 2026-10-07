@@ -1,6 +1,6 @@
 import {
-  LayoutDashboard, BedDouble, Users, Wallet, BarChart3, Settings,
-  History, Wrench, User,
+  LayoutDashboard, BedDouble, Users, Wallet, BarChart3,
+  History, Wrench,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
