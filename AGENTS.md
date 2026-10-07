@@ -31,6 +31,7 @@ Instructions for AI coding agents working on this repository.
 - Do not add dependencies without a documented reason.
 - Use consistent naming (features, Zod schemas, Supabase types).
 - UI copy in **Bahasa Indonesia**; code identifiers in English.
+- Glassmorphism UI and modern motion/micro-animations are explicitly approved for this project.
 - Package manager is **npm** — do not switch lockfiles casually.
 
 ## Architecture boundaries
@@ -51,7 +52,7 @@ Instructions for AI coding agents working on this repository.
 ## UI
 
 - Follow `UI-UX.md` palette, Inter font, layout, empty/loading/error patterns.
-- Keep UI minimal and calm; no decorative chart libraries for vanity.
+- Apply modern Glassmorphism (Liquid Glass) principles: `backdrop-filter: blur`, semi-transparent backgrounds, subtle borders, and appropriate dynamic backgrounds.
 - Ensure keyboard focus, labels, and aria-labels on icon-only controls.
 - Respect sidebar collapse and small-window behavior.
 

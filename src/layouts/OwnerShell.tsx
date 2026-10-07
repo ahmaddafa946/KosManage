@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import {
-  ChevronsLeft, ChevronsRight, LogOut, Building2,
+  ChevronsLeft, ChevronsRight, LogOut, Building2, Bell, Settings, ChevronDown
 } from 'lucide-react';
 import { OWNER_NAV } from '@/lib/nav';
 import { cn } from '@/lib/utils';
@@ -66,28 +66,63 @@ export default function OwnerShell() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="glass-surface sticky top-0 z-40 flex h-14 shrink-0 items-center justify-between border-x-0 border-t-0 px-3 sm:h-16 sm:px-6">
-          <div className="min-w-0">
-            {loading ? (
-              <Skeleton className="h-5 w-40" />
-            ) : (
-              <h1 className="truncate text-sm font-semibold">{property?.name ?? 'KosManage'}</h1>
-            )}
+        <header className="glass-surface sticky top-0 z-40 flex h-16 shrink-0 items-center justify-between border-b px-4 sm:px-6 mx-0 mt-0 sm:mx-4 sm:mt-4 sm:rounded-2xl shadow-sm">
+          {/* Left Side */}
+          <div className="flex items-center gap-3">
+            <div className="min-w-0">
+              {loading ? (
+                <Skeleton className="h-5 w-32" />
+              ) : (
+                <h1 className="truncate text-base font-bold text-slate-700 dark:text-slate-300 tracking-tight">{property?.name ?? 'Kost Putra Tampan'}</h1>
+              )}
+            </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="max-w-[48%] justify-end" aria-label="Menu profil">
-                <span className="truncate">{user?.email ?? 'Akun'}</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel className="max-w-56 truncate">{user?.email}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2 h-4 w-4" /> Keluar
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+          {/* Right Side */}
+          <div className="flex items-center gap-4">
+            {/* Icons */}
+            <div className="flex items-center gap-3 text-slate-500">
+              <button className="relative p-1 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
+                <Bell className="h-5 w-5" />
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 ring-2 ring-white dark:ring-slate-900"></span>
+              </button>
+              <button className="p-1 hover:text-slate-700 dark:hover:text-slate-300 transition-colors" onClick={() => navigate('/settings')}>
+                <Settings className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Profile */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-3 p-1 rounded-full hover:bg-slate-100/50 dark:hover:bg-slate-800/50 transition-colors focus:outline-none">
+                  <img 
+                    src="/pak_ahmad_avatar.jpg" 
+                    alt="Pak Ahmad" 
+                    className="h-9 w-9 rounded-full object-cover ring-2 ring-white dark:ring-slate-800 shadow-sm"
+                  />
+                  <div className="hidden flex-col items-start text-left sm:flex">
+                    <span className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none">Pak Ahmad</span>
+                    <span className="mt-1 rounded-full bg-teal-100/80 px-2 py-0.5 text-[10px] font-medium text-teal-800 dark:bg-teal-900/80 dark:text-teal-200">
+                      Pemilik Kost (Admin)
+                    </span>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-slate-400 sm:ml-1" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="flex flex-col">
+                    <span className="font-medium">Pak Ahmad</span>
+                    <span className="text-xs text-muted-foreground">{user?.email}</span>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="mr-2 h-4 w-4" /> Keluar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </header>
         <main className="min-h-0 flex-1 overflow-y-auto p-3 pb-24 sm:p-5 sm:pb-24 lg:p-7 lg:pb-7">
           <Outlet />

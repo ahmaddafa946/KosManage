@@ -251,7 +251,8 @@ WhatsApp, QRIS/gateway, reminder otomatis, email, booking, kontrak digital, util
 
 # v2.0 — OWNER & TENANT EXPANSION (approved spec delta)
 
-> No Liquid Glass redesign in v2.0. Product capability focus only.
+# v2.0 — OWNER & TENANT EXPANSION (approved spec delta)
+
 > Audit decisions D1–D9 are binding. Product baseline: v1.0.
 
 ## v2.0 Capability Map
@@ -284,3 +285,16 @@ Build order: identity-role → owner-dashboard, tenant-dashboard → facilities,
 - Photo: private bucket maintenance-reports, path {property_id}/{tenant_id}/{report_id}/{filename}; two-step flow (create report → upload → update image_url); signed URLs for display.
 - Payments: keep status/payment_method/payment_date canonical; add qris method + payment_reference/payment_url/paid_at additive; no real gateway; simulation clearly labeled.
 - Navigation owner: Dashboard, Kamar, Penghuni, Pembayaran, Laporan (operational/maintenance), Laporan Keuangan, Pengaturan. Tenant: Dashboard, Kamar Saya, Pembayaran, Laporan Saya (maintenance), Riwayat (payment/rental history), Profil. RLS enforces, not menu hiding.
+
+---
+
+# v3.0 — GLASSMORPHISM & MOBILE PARITY (approved spec delta)
+
+> Glassmorphism (Liquid Glass) redesign is explicitly approved and required for the web/desktop UI to match the modern direction of KosManage Mobile.
+> All features from the Mobile App, including Dark Mode and any missing tenant capabilities, must be synchronized to this web app.
+
+## v3.0 Scope Additions
+
+- **Glassmorphism Theme**: Replace the minimal, flat design with a modern Glassmorphism (Liquid Glass) aesthetic. Implement frosted glass effects (backdrop-filter: blur), semi-transparent surfaces with subtle borders, and dynamic background gradients/colors.
+- **Dark Mode**: Add support for Dark Mode alongside Light Mode, maintaining Glassmorphism principles in both.
+- **Mobile Feature Parity**: Ensure all features present in KosManage Mobile (such as bottom-sheet-like dialogs where appropriate for responsive design, updated navigation, etc.) are available and adapted for the web.

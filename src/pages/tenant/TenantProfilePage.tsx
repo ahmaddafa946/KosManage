@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { UserRound } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { UserRound, Moon, Sun, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
+import { useTheme } from '@/features/theme/ThemeContext';
 import { getMyProfile, updateMyProfile } from '@/services/profile';
 import { tenantProfileUpdateSchema } from '@/schemas/profile';
 import { mapSupabaseError } from '@/lib/errors';
@@ -11,7 +13,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function TenantProfilePage() {
-  const { user, refreshProfile } = useAuth();
+  const { user, refreshProfile, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(true);
@@ -81,6 +85,11 @@ export default function TenantProfilePage() {
     }
   }
 
+  async function handleLogout() {
+    await signOut();
+    navigate('/login', { replace: true });
+  }
+
   if (loading) {
     return (
       <div className="max-w-2xl space-y-3" aria-label="Memuat profil">
@@ -94,11 +103,11 @@ export default function TenantProfilePage() {
     <div className="max-w-2xl space-y-6">
       <div>
         <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <UserRound className="h-5 w-5" />
-          Profil Saya
+          <SettingsIcon className="h-5 w-5" />
+          Pengaturan
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Kelola informasi profil yang dapat Anda ubah sendiri.
+          Kelola informasi profil, tampilan, dan sesi Anda.
         </p>
       </div>
 
@@ -112,6 +121,39 @@ export default function TenantProfilePage() {
           {message}
         </p>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Tampilan</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-medium">Mode gelap</p>
+            <p className="text-xs text-muted-foreground">
+              Gunakan tema gelap untuk tampilan yang lebih nyaman pada kondisi minim cahaya.
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="shrink-0"
+            aria-pressed={theme === 'dark'}
+            onClick={toggleTheme}
+          >
+            {theme === 'dark' ? (
+              <>
+                <Sun className="h-4 w-4" aria-hidden="true" />
+                Mode terang
+              </>
+            ) : (
+              <>
+                <Moon className="h-4 w-4" aria-hidden="true" />
+                Mode gelap
+              </>
+            )}
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -161,6 +203,15 @@ export default function TenantProfilePage() {
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader><CardTitle className="text-sm">Sesi</CardTitle></CardHeader>
+        <CardContent>
+          <Button variant="outline" onClick={() => void handleLogout()}>
+            <LogOut className="h-4 w-4" /> Keluar
+          </Button>
         </CardContent>
       </Card>
     </div>

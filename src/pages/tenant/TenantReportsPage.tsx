@@ -238,7 +238,7 @@ export default function TenantReportsPage() {
                 onChange={(event) => setForm({ ...form, description: event.target.value })}
                 disabled={busy}
                 placeholder="Jelaskan kendala yang terjadi..."
-                className="min-h-28 w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-28 w-full rounded-xl border border-white/70 bg-white/55 px-3 py-2 text-sm shadow-sm backdrop-blur-xl focus-visible:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:focus-visible:bg-white/10"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">

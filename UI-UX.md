@@ -159,7 +159,7 @@ Gerakan halus untuk sidebar collapse dan transisi page/dialog — jangan berlebi
 
 ---
 
-# v2.0 UI Delta (no redesign, additive only)
+# v2.0 UI Delta (additive only)
 
 ## Navigation
 - Owner: Dashboard, Kamar, Penghuni, Pembayaran, Laporan (operational/maintenance), Laporan Keuangan, Pengaturan.
@@ -179,3 +179,19 @@ Gerakan halus untuk sidebar collapse dan transisi page/dialog — jangan berlebi
 
 ## Dashboards
 - Owner: KPI existing + maintenance baru/in-progress + expiry + due. Tenant: Halo {nama}, kamar, Rp/bulan, masa sewa countdown, berakhir, tagihan, status, [Bayar Sekarang], Laporan Saya. Empty states informatif. Tanpa trend palsu.
+
+---
+
+# v3.0 UI Delta (Glassmorphism & Mobile Parity)
+
+## Design System Update: Glassmorphism (Liquid Glass)
+- The UI must be updated to a modern Glassmorphism theme to match the mobile app direction.
+- Key elements: `backdrop-filter: blur(16px)`, semi-transparent backgrounds (e.g., `bg-white/40` in light mode, `bg-slate-900/40` in dark mode), subtle translucent borders, and soft shadows.
+- Avoid flat, opaque surfaces for main cards and panels; use glass effects over a vibrant or dynamic background (such as an abstract gradient or a curated background color).
+- Keep text readable and contrasts accessible despite the glass effect.
+
+## Dark Mode
+- Introduce Dark Mode as an option, applying the Glassmorphism theme with darker translucent surfaces and appropriate text colors.
+
+## Motion & Micro-animations
+- Add hover effects and interactive micro-animations to cards, buttons, and links to make the interface feel responsive and alive.

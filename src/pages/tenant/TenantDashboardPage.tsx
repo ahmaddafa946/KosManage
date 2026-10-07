@@ -157,7 +157,7 @@ export default function TenantDashboardPage() {
         </CardHeader>
         <CardContent>
           {activeBill ? (
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-lg border p-4 bg-card">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl p-4 glass-surface">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-base">Periode {activeBill.billing_period}</span>
