@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserRound, Moon, Sun, LogOut, Settings as SettingsIcon } from 'lucide-react';
+import { Moon, Sun, LogOut, Settings as SettingsIcon } from 'lucide-react';
 import { useAuth } from '@/features/auth/AuthContext';
 import { useTheme } from '@/features/theme/ThemeContext';
 import { getMyProfile, updateMyProfile } from '@/services/profile';
